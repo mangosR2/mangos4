@@ -56,26 +56,33 @@ enum Races
     RACE_TAUNKA             = 19,
     RACE_NORTHREND_SKELETON = 20,
     RACE_ICE_TROLL          = 21,
-    RACE_WORGEN             = 22
+    RACE_WORGEN             = 22,
+    RACE_HUMAN_GILNEAN      = 23,
+    RACE_PANDAREN_NEUTRAL   = 24,
+    RACE_PANDAREN_ALLI      = 25,
+    RACE_PANDAREN_HORDE     = 26,
 };
 
 // max+1 for player race
-#define MAX_RACES         23
+#define MAX_RACES         27
 
 #define RACEMASK_ALL_PLAYABLE \
     ((1<<(RACE_HUMAN-1))    |(1<<(RACE_ORC-1))      |(1<<(RACE_DWARF-1))   | \
     (1<<(RACE_NIGHTELF-1))  |(1<<(RACE_UNDEAD-1))   |(1<<(RACE_TAUREN-1))  | \
     (1<<(RACE_GNOME-1))     |(1<<(RACE_TROLL-1))    |(1<<(RACE_BLOODELF-1))| \
-    (1<<(RACE_DRAENEI-1))   |(1<<(RACE_GOBLIN-1))   |(1<<(RACE_WORGEN-1)))
+    (1<<(RACE_DRAENEI-1))   |(1<<(RACE_GOBLIN-1))   |(1<<(RACE_WORGEN-1))  | \
+    (1<<(RACE_PANDAREN_NEUTRAL-1))|(1<<(RACE_PANDAREN_ALLI-1))|(1<<(RACE_PANDAREN_HORDE-1)))
 
 // for most cases batter use ChrRace data for team check as more safe, but when need full mask of team can be use this defines.
 #define RACEMASK_ALLIANCE \
     ((1<<(RACE_HUMAN-1))    |(1<<(RACE_DWARF-1))    |(1<<(RACE_NIGHTELF-1))| \
-    (1<<(RACE_GNOME-1))     |(1<<(RACE_DRAENEI-1))  |(1<<(RACE_WORGEN-1)))
+    (1<<(RACE_GNOME-1))     |(1<<(RACE_DRAENEI-1))  |(1<<(RACE_WORGEN-1))  | \
+    (1<<(RACE_PANDAREN_NEUTRAL-1))|(1<<(RACE_PANDAREN_ALLI-1)))
 
 #define RACEMASK_HORDE \
     ((1<<(RACE_ORC-1))      |(1<<(RACE_UNDEAD-1))   |(1<<(RACE_TAUREN-1))  | \
-    (1<<(RACE_TROLL-1))     |(1<<(RACE_BLOODELF-1)) |(1<<(RACE_GOBLIN-1)))
+    (1<<(RACE_TROLL-1))     |(1<<(RACE_BLOODELF-1)) |(1<<(RACE_GOBLIN-1))  | \
+    (1<<(RACE_PANDAREN_NEUTRAL-1))|(1<<(RACE_PANDAREN_HORDE-1)))
 
 // Class value is index in ChrClasses.dbc
 enum Classes
@@ -89,7 +96,7 @@ enum Classes
     CLASS_SHAMAN        = 7,
     CLASS_MAGE          = 8,
     CLASS_WARLOCK       = 9,
-    // CLASS_UNK2       = 10,unused
+    CLASS_MONK          = 10,
     CLASS_DRUID         = 11,
 };
 
@@ -100,7 +107,7 @@ enum Classes
     ((1<<(CLASS_WARRIOR-1))|(1<<(CLASS_PALADIN-1))|(1<<(CLASS_HUNTER-1))| \
     (1<<(CLASS_ROGUE-1))  |(1<<(CLASS_PRIEST-1)) |(1<<(CLASS_SHAMAN-1))| \
     (1<<(CLASS_MAGE-1))   |(1<<(CLASS_WARLOCK-1))|(1<<(CLASS_DRUID-1)) | \
-    (1<<(CLASS_DEATH_KNIGHT-1)) )
+    (1<<(CLASS_DEATH_KNIGHT-1))|(1<<(CLASS_MONK-1)) )
 
 #define CLASSMASK_ALL_CREATURES ((1<<(CLASS_WARRIOR-1)) | (1<<(CLASS_PALADIN-1)) | (1<<(CLASS_ROGUE-1)) | (1<<(CLASS_MAGE-1)) )
 
@@ -149,14 +156,20 @@ enum Powers
     POWER_RAGE                          = 1,
     POWER_FOCUS                         = 2,
     POWER_ENERGY                        = 3,
-    //POWER_HAPPINESS                     = 4,  unused 4.x.x
+    POWER_LIGHT_FORCE                   = 4,
     POWER_RUNE                          = 5,
     POWER_RUNIC_POWER                   = 6,
     POWER_SOUL_SHARDS                   = 7,
     POWER_ECLIPSE                       = 8,
     POWER_HOLY_POWER                    = 9,
     POWER_ALTERNATIVE                   = 10,
-    MAX_POWERS                          = 11,
+    POWER_DARK_FORCE                    = 11,
+    POWER_CHI                           = 12,
+    POWER_SHADOW_ORBS                   = 13,
+    POWER_BURNING_EMBERS                = 14,
+    POWER_DEMONIC_FURY                  = 15,
+    POWER_ARCANE_CHARGES                = 16,
+    MAX_POWERS                          = 17,
     POWER_HEALTH                        = 0xFFFFFFFE    // (-2 as signed value)
 };
 
@@ -653,7 +666,7 @@ enum SpellAttributesEx10
 };
 
 #define MAX_TALENT_SPEC_COUNT   2
-#define MAX_GLYPH_SLOT_INDEX    9
+#define MAX_GLYPH_SLOT_INDEX    6
 #define REQ_PRIMARY_TREE_TALENTS 31
 
 enum SheathTypes
@@ -716,6 +729,10 @@ enum Language
     LANG_GOBLIN_BINARY  = 38,
     LANG_WORGEN         = 39,
     LANG_GOBLIN         = 40,
+    LANG_PANDAREN_NEUTRAL = 42,
+    LANG_PANDAREN_TUSHUI = 43,
+    LANG_PANDAREN_HUOJIN = 44,
+    LANG_RIKKITUN       = 45,
     LANG_ADDON          = 0xFFFFFFFF                        // used by addons, in 2.4.0 not exit, replaced by messagetype?
 };
 
@@ -2301,7 +2318,9 @@ enum CreatureType
     CREATURE_TYPE_NOT_SPECIFIED    = 10,
     CREATURE_TYPE_TOTEM            = 11,
     CREATURE_TYPE_NON_COMBAT_PET   = 12,
-    CREATURE_TYPE_GAS_CLOUD        = 13
+    CREATURE_TYPE_GAS_CLOUD        = 13,
+    CREATURE_TYPE_WILD_PET         = 14,
+    CREATURE_TYPE_ABERRATION       = 15,
 };
 
 // Unions of CreatureType
@@ -2356,7 +2375,33 @@ enum CreatureFamily
     CREATURE_FAMILY_RHINO          = 43,
     CREATURE_FAMILY_WASP           = 44,
     CREATURE_FAMILY_CORE_HOUND     = 45,
-    CREATURE_FAMILY_SPIRIT_BEAST   = 46
+    CREATURE_FAMILY_SPIRIT_BEAST   = 46,
+    CREATURE_FAMILY_WATER_ELEMENTAL= 49,
+    CREATURE_FAMILY_FOX            = 50,
+    CREATURE_FAMILY_MONKEY         = 51,
+    CREATURE_FAMILY_DOG            = 52,
+    CREATURE_FAMILY_BEETLE         = 53,
+    CREATURE_FAMILY_SHALE_SPIDER   = 55,
+    CREATURE_FAMILY_ZOMBIE         = 56,
+    CREATURE_FAMILY_QA_TEST        = 57,
+    CREATURE_FAMILY_SILITHID2      = 59,
+    CREATURE_FAMILY_WASP2          = 66,
+    CREATURE_FAMILY_HYDRA          = 68,
+    CREATURE_FAMILY_FEL_IMP        = 100,
+    CREATURE_FAMILY_VOIDLORD       = 101,
+    CREATURE_FAMILY_SHIVARRA       = 102,
+    CREATURE_FAMILY_OBSERVER       = 103,
+    CREATURE_FAMILY_WRATHGUARD     = 104,
+    CREATURE_FAMILY_INFERNAL       = 108,
+    CREATURE_FAMILY_FIRE_ELEMENTAL = 116,
+    CREATURE_FAMILY_EARTH_ELEMENTAL= 117,
+    CREATURE_FAMILY_CRANE          = 125,
+    CREATURE_FAMILY_WATER_STRIDER  = 126,
+    CREATURE_FAMILY_PORCUPINE      = 127,
+    CREATURE_FAMILY_QUILEN         = 128,
+    CREATURE_FAMILY_GOAT           = 129,
+    CREATURE_FAMILY_BASILISK       = 130,
+    CREATURE_FAMILY_DIREHORN       = 138,
 };
 
 enum CreatureTypeFlags
@@ -2439,7 +2484,20 @@ enum HolidayIds
     HOLIDAY_CALL_TO_ARMS_RBG_15v15   = 442,
     HOLIDAY_CALL_TO_ARMS_RBG_25v25   = 443,
     HOLIDAY_WOW_7TH_ANNIVERSARY      = 467,
+    HOLIDAY_DARKMOON_FAIRE           = 479,
     HOLIDAY_WOW_8TH_ANNIVERSARY      = 484,
+    HOLIDAY_CALL_TO_ARMS_SM          = 488,    // Call to Arms: Silvershard Mines
+    HOLIDAY_CALL_TO_ARMS_TOK         = 489,    // Call to Arms: Temple of Kotmogu
+    HOLIDAY_CALL_TO_ARMS_AV2         = 490,    // Call to Arms: Alterac Valley
+    HOLIDAY_CALL_TO_ARMS_AB2         = 491,    // Call to Arms: Arathi Basin
+    HOLIDAY_CALL_TO_ARMS_EY2         = 492,    // Call to Arms: Eye of the Storm
+    HOLIDAY_CALL_TO_ARMS_IC2         = 493,    // Call to Arms: Isle of Conquest
+    HOLIDAY_CALL_TO_ARMS_SM2         = 494,    // Call to Arms: Silvershard Mines
+    HOLIDAY_CALL_TO_ARMS_SA2         = 495,    // Call to Arms: Strand of the Ancients
+    HOLIDAY_CALL_TO_ARMS_TOK2        = 496,    // Call to Arms: Temple of Kotmogu
+    HOLIDAY_CALL_TO_ARMS_BG2         = 497,    // Call to Arms: The Battle for Gilneas
+    HOLIDAY_CALL_TO_ARMS_TP2         = 498,    // Call to Arms: Twin Peaks
+    HOLIDAY_CALL_TO_ARMS_WS2         = 499,    // Call to Arms: Warsong Gulch 
 };
 
 // values based at QuestSort.dbc
@@ -2482,7 +2540,21 @@ enum QuestSort
     QUEST_SORT_BREWFEST            = 370,
     QUEST_SORT_INSCRIPTION         = 371,
     QUEST_SORT_DEATH_KNIGHT        = 372,
-    QUEST_SORT_JEWELCRAFTING       = 373
+    QUEST_SORT_JEWELCRAFTING       = 373,
+    QUEST_SORT_NOBLEGARDEN         = 374,
+    QUEST_SORT_PILGRIMS_BOUNTY     = 375,
+    QUEST_SORT_LOVE_IS_IN_THE_AIR  = 376,
+    QUEST_SORT_ARCHAEOLOGY         = 377,
+    QUEST_SORT_CHILDRENS_WEEK      = 378,
+    QUEST_SORT_FIRELANDS_INVASION  = 379,
+    QUEST_SORT_THE_ZANDALARI       = 380,
+    QUEST_SORT_ELEMENTAL_BONDS     = 381,
+    QUEST_SORT_PANDAREN_BREWMASTERS= 391,
+    QUEST_SORT_SCENARIO            = 392,
+    QUEST_SORT_BATTLE_PETS         = 394,
+    QUEST_SORT_MONK                = 395,
+    QUEST_SORT_LANDFALL            = 396,
+    QUEST_SORT_PANDAREN_CAMPAIGN   = 397,
 };
 
 inline uint8 ClassByQuestSort(int32 QuestSort)
@@ -2744,7 +2816,11 @@ enum TotemCategory
     TC_BLADED_PICKAXE              = 168,
     TC_FLINT_AND_TINDER            = 169,
     TC_RUNED_COBALT_ROD            = 189,
-    TC_RUNED_TITANIUM_ROD          = 190
+    TC_RUNED_TITANIUM_ROD          = 190,
+    TC_RUNED_ELEMENTIUM_ROD        = 209,
+    TC_HIGH_POWERED_BOLT_GUN       = 210,
+    TC_RUNED_COPPER_ROD2           = 230,
+    TC_JEWELERS_KIT                = 238, 
 };
 
 enum UnitDynFlags
@@ -3138,9 +3214,13 @@ enum BattleGroundTypeId
     //BATTLEGROUND_UNK1          = 441,                     // icecrown citadel
     //BATTLEGROUND_UNK2          = 443,                     // ruby sanctum
     //BATTLEGROUND_UNK3          = 656,                     // rated eye of the storm
+    BATTLEGROUND_TK            = 699,                       // Temple of Kotmogu
+    BATTLEGROUND_CTF           = 706,                       // CTF3
+    BATTLEGROUND_SM            = 708,                       // Silvershard Mines
+    BATTLEGROUND_TA            = 719,                       // Tol'Vir Arena
 };
 
-#define MAX_BATTLEGROUND_TYPE_ID 121
+#define MAX_BATTLEGROUND_TYPE_ID 720
 
 // handle the queue types and bg types separately to enable joining queue for different sized arenas at the same time
 enum BattleGroundQueueTypeId
@@ -3377,6 +3457,28 @@ enum TrackedAuraType
     MAX_TRACKED_AURA_TYPES
 };
 
+// we need to stick to 1 version or half of the stuff will work for someone
+// others will not and opposite
+// will only support WoW, WoW:TBC, WoW:WotLK, WoW:Cataclysm 4.3.4 client build 15595 and WoW:MoP client build 16357...
+
+#define EXPECTED_MANGOSD_CLIENT_BUILD        {16357, 0}
+
+// max supported expansion level in mangosd
+// NOTE: not set it more that supported by targeted client version with all expansions installed
+// account with expansion > client supported will rejected at connection by client
+// because if client receive unsupported expansion level it think
+// that it not have expansion installed and reject
+enum Expansions
+{
+    EXPANSION_NONE                      = 0,                // classic
+    EXPANSION_TBC                       = 1,                // TBC
+    EXPANSION_WOTLK                     = 2,                // WotLK
+    EXPANSION_CATA                      = 3,                // Cataclysm
+    EXPANSION_MOP                       = 4,                // Mists of Pandaria
+};
+
+#define MAX_EXPANSION 5
+
 // Maxlevel for expansion
 enum MaxLevel
 {
@@ -3435,15 +3537,6 @@ enum AIEventType
     AI_EVENT_CUSTOM_D           = 1003,
     AI_EVENT_CUSTOM_E           = 1004,
     AI_EVENT_CUSTOM_F           = 1005,
-};
-
-enum Expansions
-{
-    EXPANSION_NONE                      = 0,                // classic
-    EXPANSION_TBC                       = 1,                // TBC
-    EXPANSION_WOTLK                     = 2,                // WotLK
-    EXPANSION_CATA                      = 3,                // Cata
-    EXPANSION_MOP                       = 4,                // MoP
 };
 
 #endif

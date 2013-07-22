@@ -155,7 +155,7 @@ void WorldSession::SendPacket(WorldPacket const* packet)
     if (!m_Socket)
         return;
 
-    if (opcodeTable[packet->GetOpcode()].status == STATUS_UNHANDLED)
+    if (packet->GetOpcode() != MSG_WOW_CONNECTION || opcodeTable[packet->GetOpcode()].status == STATUS_UNHANDLED)
     {
         DEBUG_LOG("SESSION: tried to send an unhandled opcode 0x%.4X", packet->GetOpcode());
         return;

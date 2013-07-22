@@ -304,9 +304,7 @@ void AuthSocket::SendProof(Sha1Hash sha)
         case 13623:                                         // 4.0.6a
         case 15050:                                         // 4.3.0
         case 15595:                                         // 4.3.4
-        case 16057:                                         // 5.0.5a
-        case 16135:                                         // 5.0.5b
-        case 16357:                                         // 5.1.0a
+        case 16357:                                         // 5.1.0
         default:                                            // or later
         {
             sAuthLogonProof_S proof;

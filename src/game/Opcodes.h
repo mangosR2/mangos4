@@ -32,7 +32,7 @@
 #include "WorldSession.h"
 
 /// List of Opcodes
-/// Max Opcode value in 4.3.4.15595 is 65535
+/// Max Opcode value in 5.1.0.16357 is 0xFFF
 enum Opcodes
 {
     MSG_NULL_ACTION,

@@ -77,18 +77,17 @@
 
 #define ZONE_UPDATE_INTERVAL (1*IN_MILLISECONDS)
 
-// FIXME
-#define PLAYER_SKILL_INDEX(x)       (PLAYER_SKILL_LINEID_0 + ((x)*3))
+#define PLAYER_SKILL_INDEX(x) (PLAYER_SKILL_LINEID_0 + ((x)*3))
 #define PLAYER_SKILL_VALUE_INDEX(x) (PLAYER_SKILL_INDEX(x)+1)
 #define PLAYER_SKILL_BONUS_INDEX(x) (PLAYER_SKILL_INDEX(x)+2)
 
-#define SKILL_VALUE(x)         PAIR32_LOPART(x)
-#define SKILL_MAX(x)           PAIR32_HIPART(x)
-#define MAKE_SKILL_VALUE(v, m) MAKE_PAIR32(v,m)
+#define SKILL_VALUE(x) PAIR32_LOPART(x)
+#define SKILL_MAX(x) PAIR32_HIPART(x)
+#define MAKE_SKILL_VALUE(v, m) MAKE_PAIR32(v, m)
 
-#define SKILL_TEMP_BONUS(x)    int16(PAIR32_LOPART(x))
-#define SKILL_PERM_BONUS(x)    int16(PAIR32_HIPART(x))
-#define MAKE_SKILL_BONUS(t, p) MAKE_PAIR32(t,p)
+#define SKILL_TEMP_BONUS(x) int16(PAIR32_LOPART(x))
+#define SKILL_PERM_BONUS(x) int16(PAIR32_HIPART(x))
+#define MAKE_SKILL_BONUS(t, p) MAKE_PAIR32(t, p)
 
 enum CharacterFlags
 {
@@ -764,8 +763,8 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
         SetUInt64Value(PLAYER__FIELD_KNOWN_TITLES + i, 0);  // 0=disabled
     SetUInt32Value(PLAYER_CHOSEN_TITLE, 0);
 
-    SetUInt32Value( PLAYER_FIELD_KILLS, 0 );
-    SetUInt32Value( PLAYER_FIELD_LIFETIME_HONORBALE_KILLS, 0 );
+    SetUInt32Value(PLAYER_FIELD_KILLS, 0);
+    SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 0);
 
     // set starting level
     uint32 start_level = getClass() != CLASS_DEATH_KNIGHT
@@ -3019,6 +3018,10 @@ void Player::InitStatsForLevel(bool reapplyMods)
     // set default cast time multiplier
     SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);
 
+    SetFloatValue(UNIT_MOD_CAST_HASTE, 1.0f);           // spell haste
+    SetFloatValue(UNIT_MOD_HASTE, 1.0f);        // melee haste
+    SetFloatValue(PLAYER_FIELD_MOD_RANGED_HASTE, 1.0f); // ranged haste
+
     // save base values (bonuses already included in stored stats
     for (int i = STAT_STRENGTH; i < MAX_STATS; ++i)
         SetCreateStat(Stats(i), info.stats[i]);
@@ -3142,7 +3145,7 @@ void Player::InitStatsForLevel(bool reapplyMods)
     RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP | UNIT_BYTE2_FLAG_SANCTUARY);
 
     // restore if need some important flags
-    SetUInt32Value(PLAYER_FIELD_BYTES2, 0);                // flags empty by default
+    //SetUInt32Value(PLAYER_FIELD_BYTES2, 0 );                // flags empty by default
 
     if (reapplyMods)                                         //reapply stats values only on .reset stats (level) command
         _ApplyAllStatBonuses();
@@ -5771,11 +5774,10 @@ bool Player::UpdateSkill(uint32 skill_id, uint32 step)
     if (itr == mSkillStatus.end() || itr->second.uState == SKILL_DELETED)
         return false;
 
-    uint16 field = itr->second.pos / 2;
-    uint8 offset = itr->second.pos & 1; // itr->second.pos % 2
-
-    uint16 value = GetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset);
-    uint16 max = GetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset);
+    uint32 valueIndex = PLAYER_SKILL_VALUE_INDEX(itr->second.pos);
+    uint32 data = GetUInt32Value(valueIndex);
+    uint32 value = SKILL_VALUE(data);
+    uint32 max = SKILL_MAX(data);
 
     if (!max || !value || value >= max)
         return false;
@@ -5784,10 +5786,10 @@ bool Player::UpdateSkill(uint32 skill_id, uint32 step)
         if (new_value > max)
             new_value = max;
 
-        SetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset, new_value);
-        if (itr->second.uState != SKILL_NEW)
-            itr->second.uState = SKILL_CHANGED;
-        GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL,skill_id);
+    SetUInt32Value(valueIndex, MAKE_SKILL_VALUE(new_value, max));
+    if (itr->second.uState != SKILL_NEW)
+        itr->second.uState = SKILL_CHANGED;
+    GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, skill_id);
 
     return true;
 }
@@ -5896,11 +5898,10 @@ bool Player::UpdateSkillPro(uint16 SkillId, int32 Chance, uint32 step)
     if (itr == mSkillStatus.end() || itr->second.uState == SKILL_DELETED)
         return false;
 
-    uint16 field = itr->second.pos / 2;
-    uint8 offset = itr->second.pos & 1; // itr->second.pos % 2
-
-    uint16 SkillValue = GetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset);
-    uint16 MaxValue = GetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset);
+    uint32 valueIndex = PLAYER_SKILL_VALUE_INDEX(itr->second.pos);
+    uint32 data = GetUInt32Value(valueIndex);
+    uint32 SkillValue = SKILL_VALUE(data);
+    uint32 MaxValue = SKILL_MAX(data);
 
     if (!MaxValue || !SkillValue || SkillValue >= MaxValue)
         return false;
@@ -5909,11 +5910,11 @@ bool Player::UpdateSkillPro(uint16 SkillId, int32 Chance, uint32 step)
 
     if (Roll <= Chance)
     {
-        uint16 new_value = SkillValue + step;
+        uint32 new_value = SkillValue + step;
         if (new_value > MaxValue)
             new_value = MaxValue;
 
-        SetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset, new_value);
+        SetUInt32Value(valueIndex, MAKE_SKILL_VALUE(new_value, MaxValue));
         if (itr->second.uState != SKILL_NEW)
             itr->second.uState = SKILL_CHANGED;
         for (uint32* bsl = &bonusSkillLevels[0]; *bsl; ++bsl)
@@ -5963,12 +5964,16 @@ void Player::ModifySkillBonus(uint32 skillid,int32 val, bool talent)
     if (itr == mSkillStatus.end() || itr->second.uState == SKILL_DELETED)
         return;
 
-    uint16 field = itr->second.pos / 2 + (talent ? PLAYER_SKILL_TALENT_0 : PLAYER_SKILL_MODIFIER_0);
-    uint8 offset = itr->second.pos & 1; // itr->second.pos % 2
+    uint32 bonusIndex = PLAYER_SKILL_BONUS_INDEX(itr->second.pos);
 
-    uint16 bonus = GetUInt16Value(field, offset);
+    uint32 bonus_val = GetUInt32Value(bonusIndex);
+    int16 temp_bonus = SKILL_TEMP_BONUS(bonus_val);
+    int16 perm_bonus = SKILL_PERM_BONUS(bonus_val);
 
-    SetUInt16Value(field, offset, bonus + val);
+    if (talent)                                          // permanent bonus stored in high part
+        SetUInt32Value(bonusIndex, MAKE_SKILL_BONUS(temp_bonus, perm_bonus+val));
+    else                                                // temporary/item bonus stored in low part
+        SetUInt32Value(bonusIndex, MAKE_SKILL_BONUS(temp_bonus+val, perm_bonus));
 }
 
 void Player::UpdateSkillsForLevel()
@@ -5990,18 +5995,17 @@ void Player::UpdateSkillsForLevel()
             continue;
         // only weapons skills curently have SKILL_RANGE_LEVEL
 
-        uint16 field = itr->second.pos / 2;
-        uint8 offset = itr->second.pos & 1; // itr->second.pos % 2
-
-        uint16 max = GetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset);
+        uint32 valueIndex = PLAYER_SKILL_VALUE_INDEX(itr->second.pos);
+        uint32 data = GetUInt32Value(valueIndex);
+        uint32 max = SKILL_MAX(data);
+        uint32 val = SKILL_VALUE(data);
 
         /// update only level dependent max skill values
-        if (max!=1)
+        if (max != 1)
         {
-                SetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset, maxSkill);
-                if (itr->second.uState != SKILL_NEW)
-                    itr->second.uState = SKILL_CHANGED;
-            }
+            SetUInt32Value(valueIndex, MAKE_SKILL_VALUE(val, maxSkill));
+            if (itr->second.uState != SKILL_NEW)
+                itr->second.uState = SKILL_CHANGED;
         }
     }
 
@@ -6015,14 +6019,14 @@ void Player::UpdateSkillsToMaxSkillsForLevel()
         uint32 pskill = itr->first;
         if (IsProfessionOrRidingSkill(pskill))
             continue;
-        uint16 field = itr->second.pos / 2;
-        uint8 offset = itr->second.pos & 1; // itr->second.pos % 2
 
-        uint16 max = GetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset);
+        uint32 valueIndex = PLAYER_SKILL_VALUE_INDEX(itr->second.pos);
+        uint32 data = GetUInt32Value(valueIndex);
+        uint32 max = SKILL_MAX(data);
 
         if (max > 1)
         {
-            SetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset, max);
+            SetUInt32Value(valueIndex, MAKE_SKILL_VALUE(max, max));
             if (itr->second.uState != SKILL_NEW)
                 itr->second.uState = SKILL_CHANGED;
             GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, pskill);
@@ -6043,15 +6047,12 @@ void Player::SetSkill(uint16 id, uint16 currVal, uint16 maxVal, uint16 step /*=0
     // has skill
     if (itr != mSkillStatus.end() && itr->second.uState != SKILL_DELETED)
     {
-        uint16 field = itr->second.pos / 2;
-        uint8 offset = itr->second.pos & 1; // itr->second.pos % 2
-        oldVal = GetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset);
+        oldVal = SKILL_VALUE(GetUInt32Value(PLAYER_SKILL_VALUE_INDEX(itr->second.pos)));
         if (currVal)
         {
-            SetUInt16Value(PLAYER_SKILL_STEP_0 + field, offset, step);
+            SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(itr->second.pos), MAKE_PAIR32(id, step));
             // update value
-            SetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset, currVal);
-            SetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset, maxVal);
+            SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(itr->second.pos), MAKE_SKILL_VALUE(currVal, maxVal));
             if (itr->second.uState != SKILL_NEW)
                 itr->second.uState = SKILL_CHANGED;
             learnSkillRewardedSpells(id, oldVal);
@@ -6061,12 +6062,9 @@ void Player::SetSkill(uint16 id, uint16 currVal, uint16 maxVal, uint16 step /*=0
         else                                                // remove
         {
             // clear skill fields
-            SetUInt16Value(PLAYER_SKILL_LINEID_0 + field, offset, 0);
-            SetUInt16Value(PLAYER_SKILL_STEP_0 + field, offset, 0);
-            SetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset, 0);
-            SetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset, 0);
-            SetUInt16Value(PLAYER_SKILL_MODIFIER_0 + field, offset, 0);
-            SetUInt16Value(PLAYER_SKILL_TALENT_0 + field, offset, 0);
+            SetUInt32Value(PLAYER_SKILL_INDEX(itr->second.pos), 0);
+            SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(itr->second.pos), 0);
+            SetUInt32Value(PLAYER_SKILL_BONUS_INDEX(itr->second.pos), 0);
 
             // mark as deleted or simply remove from map if not saved yet
             if (itr->second.uState != SKILL_NEW)
@@ -6085,10 +6083,7 @@ void Player::SetSkill(uint16 id, uint16 currVal, uint16 maxVal, uint16 step /*=0
     {
         for (int i = 0; i < PLAYER_MAX_SKILLS; ++i)
         {
-            uint16 field = i / 2;
-            uint8 offset = i & 1; // i % 2
-
-            if (!GetUInt16Value(PLAYER_SKILL_LINEID_0 + field, offset))
+            if (!GetUInt32Value(PLAYER_SKILL_INDEX(i)))
             {
                 SkillLineEntry const *pSkill = sSkillLineStore.LookupEntry(id);
                 if (!pSkill)
@@ -6097,12 +6092,11 @@ void Player::SetSkill(uint16 id, uint16 currVal, uint16 maxVal, uint16 step /*=0
                     return;
                 }
 
-                SetUInt16Value(PLAYER_SKILL_LINEID_0 + field, offset, id);
-                SetUInt16Value(PLAYER_SKILL_STEP_0 + field, offset, step);
-                SetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset, currVal);
-                SetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset, maxVal);
-                GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, id);
-                GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, id);
+                SetUInt32Value(PLAYER_SKILL_INDEX(i), MAKE_PAIR32(id, step));
+                SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(i), MAKE_SKILL_VALUE(currVal, maxVal));
+
+                UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_REACH_SKILL_LEVEL, id);
+                UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_LEARN_SKILL_LEVEL, id);
 
                 // insert new entry or update if not deleted old entry yet
                 if (itr != mSkillStatus.end())
@@ -6114,8 +6108,7 @@ void Player::SetSkill(uint16 id, uint16 currVal, uint16 maxVal, uint16 step /*=0
                     mSkillStatus.insert(SkillStatusMap::value_type(id, SkillStatusData(i, SKILL_NEW)));
 
                 // apply skill bonuses
-                SetUInt16Value(PLAYER_SKILL_MODIFIER_0 + field, offset, 0);
-                SetUInt16Value(PLAYER_SKILL_TALENT_0 + field, offset, 0);
+                SetUInt32Value(PLAYER_SKILL_BONUS_INDEX(i), 0);
 
                 // temporary bonuses
                 {
@@ -6158,7 +6151,7 @@ uint16 Player::GetSkillStep(uint16 skill) const
     if (itr == mSkillStatus.end() || itr->second.uState == SKILL_DELETED)
         return 0;
 
-    return GetUInt16Value(PLAYER_SKILL_STEP_0 + itr->second.pos / 2, itr->second.pos & 1);
+    return PAIR32_HIPART(GetUInt32Value(PLAYER_SKILL_INDEX(itr->second.pos)));
 }
 
 uint16 Player::GetSkillValue(uint32 skill) const
@@ -6170,12 +6163,11 @@ uint16 Player::GetSkillValue(uint32 skill) const
     if (itr == mSkillStatus.end() || itr->second.uState == SKILL_DELETED)
         return 0;
 
-    uint16 field = itr->second.pos / 2;
-    uint8 offset = itr->second.pos & 1;
+    uint32 bonus = GetUInt32Value(PLAYER_SKILL_BONUS_INDEX(itr->second.pos));
 
-    int32 result = int32(GetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset));
-    result += int32(GetUInt16Value(PLAYER_SKILL_MODIFIER_0 + field, offset));
-    result += int32(GetUInt16Value(PLAYER_SKILL_TALENT_0 + field, offset));
+    int32 result = int32(SKILL_VALUE(GetUInt32Value(PLAYER_SKILL_VALUE_INDEX(itr->second.pos))));
+    result += SKILL_TEMP_BONUS(bonus);//int32(GetUInt16Value(PLAYER_SKILL_MODIFIER_0 + field, offset));
+    result += SKILL_PERM_BONUS(bonus);//int32(GetUInt16Value(PLAYER_SKILL_TALENT_0 + field, offset));
     return result < 0 ? 0 : result;
 }
 
@@ -6191,9 +6183,11 @@ uint16 Player::GetMaxSkillValue(uint32 skill) const
     uint16 field = itr->second.pos / 2;
     uint8 offset = itr->second.pos & 1;
 
-    int32 result = int32(GetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset));
-    result += int32(GetUInt16Value(PLAYER_SKILL_MODIFIER_0 + field, offset));
-    result += int32(GetUInt16Value(PLAYER_SKILL_TALENT_0 + field, offset));
+    uint32 bonus = GetUInt32Value(PLAYER_SKILL_BONUS_INDEX(itr->second.pos));
+
+    int32 result = int32(SKILL_MAX(GetUInt32Value(PLAYER_SKILL_VALUE_INDEX(itr->second.pos))));
+    result += SKILL_TEMP_BONUS(bonus); //int32(GetUInt16Value(PLAYER_SKILL_MODIFIER_0 + field, offset));
+    result += SKILL_PERM_BONUS(bonus); //int32(GetUInt16Value(PLAYER_SKILL_TALENT_0 + field, offset));
     return result < 0 ? 0 : result;
 }
 
@@ -6206,10 +6200,7 @@ uint16 Player::GetPureMaxSkillValue(uint32 skill) const
     if (itr == mSkillStatus.end() || itr->second.uState == SKILL_DELETED)
         return 0;
 
-    uint16 field = itr->second.pos / 2;
-    uint8 offset = itr->second.pos & 1;
-
-    return GetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset);
+    return SKILL_MAX(GetUInt32Value(PLAYER_SKILL_VALUE_INDEX(itr->second.pos)));
 }
 
 uint16 Player::GetBaseSkillValue(uint32 skill) const
@@ -6224,8 +6215,8 @@ uint16 Player::GetBaseSkillValue(uint32 skill) const
     uint16 field = itr->second.pos / 2;
     uint8 offset = itr->second.pos & 1;
 
-    int32 result = int32(GetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset));
-    result += int32(GetUInt16Value(PLAYER_SKILL_TALENT_0 + field, offset));
+    int32 result = int32(SKILL_VALUE(GetUInt32Value(PLAYER_SKILL_VALUE_INDEX(itr->second.pos))));
+    result += SKILL_PERM_BONUS(GetUInt32Value(PLAYER_SKILL_BONUS_INDEX(itr->second.pos)));
     return result < 0 ? 0 : result;
 }
 
@@ -6238,10 +6229,7 @@ uint16 Player::GetPureSkillValue(uint32 skill) const
     if (itr == mSkillStatus.end() || itr->second.uState == SKILL_DELETED)
         return 0;
 
-    uint16 field = itr->second.pos / 2;
-    uint8 offset = itr->second.pos & 1;
-
-    return GetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset);
+    return SKILL_VALUE(GetUInt32Value(PLAYER_SKILL_VALUE_INDEX(itr->second.pos)));
 }
 
 int16 Player::GetSkillPermBonusValue(uint32 skill) const
@@ -6256,7 +6244,7 @@ int16 Player::GetSkillPermBonusValue(uint32 skill) const
     uint16 field = itr->second.pos / 2;
     uint8 offset = itr->second.pos & 1;
 
-    return GetUInt16Value(PLAYER_SKILL_TALENT_0 + field, offset);
+    return SKILL_PERM_BONUS(GetUInt32Value(PLAYER_SKILL_BONUS_INDEX(itr->second.pos)));
 }
 
 int16 Player::GetSkillTempBonusValue(uint32 skill) const
@@ -6271,7 +6259,7 @@ int16 Player::GetSkillTempBonusValue(uint32 skill) const
     uint16 field = itr->second.pos / 2;
     uint8 offset = itr->second.pos & 1;
 
-    return GetUInt16Value(PLAYER_SKILL_MODIFIER_0 + field, offset);
+    return SKILL_TEMP_BONUS(GetUInt32Value(PLAYER_SKILL_BONUS_INDEX(itr->second.pos)));
 }
 
 void Player::SendInitialActionButtons() const
@@ -7001,7 +6989,7 @@ bool Player::RewardHonor(Unit *uVictim, uint32 groupsize, float honor)
             // count the number of playerkills in one day
             ApplyModUInt32Value(PLAYER_FIELD_KILLS, 1, true);
             // and those in a lifetime
-            ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS, 1, true);
+            ApplyModUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, 1, true);
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EARN_HONORABLE_KILL);
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HONORABLE_KILL, 1);
             UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_HK_CLASS, pVictim->getClass());
@@ -14456,15 +14444,16 @@ bool Player::SatisfyQuestDay(Quest const* qInfo, bool msg) const
         return true;
 
     bool have_slot = false;
-    for (uint32 quest_daily_idx = 0; quest_daily_idx < PLAYER_MAX_DAILY_QUESTS; ++quest_daily_idx)
-    {
-        uint32 id = GetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1+quest_daily_idx);
-        if (qInfo->GetQuestId()==id)
-            return false;
+    // FIXME?
+    //for (uint32 quest_daily_idx = 0; quest_daily_idx < PLAYER_MAX_DAILY_QUESTS; ++quest_daily_idx)
+    //{
+    //    uint32 id = GetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1+quest_daily_idx);
+    //    if (qInfo->GetQuestId() == id)
+    //        return false;
 
-        if (!id)
-            have_slot = true;
-    }
+    //    if (!id)
+    //        have_slot = true;
+    //}
 
     if (!have_slot)
     {
@@ -15651,7 +15640,7 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder *holder)
             SetArenaTeamInfoField(arena_slot, ArenaTeamInfoType(j), 0);
     }
 
-    SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS, fields[40].GetUInt32());
+    SetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS, fields[40].GetUInt32());
     SetUInt16Value(PLAYER_FIELD_KILLS, 0, fields[41].GetUInt16()); // today
     SetUInt16Value(PLAYER_FIELD_KILLS, 1, fields[42].GetUInt16()); // yesterday
 
@@ -16947,40 +16936,40 @@ void Player::_LoadQuestStatus(QueryResult *result)
 
 void Player::_LoadDailyQuestStatus(QueryResult *result)
 {
-    for (uint32 quest_daily_idx = 0; quest_daily_idx < PLAYER_MAX_DAILY_QUESTS; ++quest_daily_idx)
-        SetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1+quest_daily_idx,0);
+    //for(uint32 quest_daily_idx = 0; quest_daily_idx < PLAYER_MAX_DAILY_QUESTS; ++quest_daily_idx)
+    //    SetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1+quest_daily_idx,0);
 
-    //QueryResult *result = CharacterDatabase.PQuery("SELECT quest FROM character_queststatus_daily WHERE guid = '%u'", GetGUIDLow());
+    ////QueryResult *result = CharacterDatabase.PQuery("SELECT quest FROM character_queststatus_daily WHERE guid = '%u'", GetGUIDLow());
 
-    if (result)
-    {
-        uint32 quest_daily_idx = 0;
+    //if(result)
+    //{
+    //    uint32 quest_daily_idx = 0;
 
-        do
-        {
-            if (quest_daily_idx >= PLAYER_MAX_DAILY_QUESTS)  // max amount with exist data in query
-            {
-                sLog.outError("Player (GUID: %u) have more 25 daily quest records in `charcter_queststatus_daily`",GetGUIDLow());
-                break;
-            }
+    //    do
+    //    {
+    //        if(quest_daily_idx >= PLAYER_MAX_DAILY_QUESTS)  // max amount with exist data in query
+    //        {
+    //            ERROR_LOG("Player (GUID: %u) have more 25 daily quest records in `charcter_queststatus_daily`",GetGUIDLow());
+    //            break;
+    //        }
 
-            Field* fields = result->Fetch();
+    //        Field *fields = result->Fetch();
 
-            uint32 quest_id = fields[0].GetUInt32();
+    //        uint32 quest_id = fields[0].GetUInt32();
 
-            Quest const* pQuest = sObjectMgr.GetQuestTemplate(quest_id);
-            if (!pQuest)
-                continue;
+    //        Quest const* pQuest = sObjectMgr.GetQuestTemplate(quest_id);
+    //        if( !pQuest )
+    //            continue;
 
-            SetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1+quest_daily_idx,quest_id);
-            ++quest_daily_idx;
+    //        SetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1+quest_daily_idx,quest_id);
+    //        ++quest_daily_idx;
 
-            DEBUG_LOG("Daily quest {%u} cooldown for player (GUID: %u)", quest_id, GetGUIDLow());
-        }
-        while(result->NextRow());
+    //        DEBUG_LOG("Daily quest {%u} cooldown for player (GUID: %u)", quest_id, GetGUIDLow());
+    //    }
+    //    while( result->NextRow() );
 
-        delete result;
-    }
+    //    delete result;
+    //}
 
     m_DailyQuestChanged = false;
 }
@@ -17650,7 +17639,7 @@ void Player::SaveToDB()
     ss << m_taxi.SaveTaxiDestinationsToString();       //string
     uberInsert.addString(ss);
 
-    uberInsert.addUInt32(GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS));
+    uberInsert.addUInt32(GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS));
 
     uberInsert.addUInt16(GetUInt16Value(PLAYER_FIELD_KILLS, 0));
 
@@ -18165,17 +18154,17 @@ void Player::_SaveDailyQuestStatus()
         return;
 
     // we don't need transactions here.
-    static SqlStatementID delQuestStatus ;
-    static SqlStatementID insQuestStatus ;
+    //static SqlStatementID delQuestStatus ;
+    //static SqlStatementID insQuestStatus ;
 
-    SqlStatement stmtDel = CharacterDatabase.CreateStatement(delQuestStatus, "DELETE FROM character_queststatus_daily WHERE guid = ?");
-    SqlStatement stmtIns = CharacterDatabase.CreateStatement(insQuestStatus, "INSERT INTO character_queststatus_daily (guid,quest) VALUES (?, ?)");
+    //SqlStatement stmtDel = CharacterDatabase.CreateStatement(delQuestStatus, "DELETE FROM character_queststatus_daily WHERE guid = ?");
+    //SqlStatement stmtIns = CharacterDatabase.CreateStatement(insQuestStatus, "INSERT INTO character_queststatus_daily (guid,quest) VALUES (?, ?)");
 
-    stmtDel.PExecute(GetGUIDLow());
+    //stmtDel.PExecute(GetGUIDLow());
 
-    for (uint32 quest_daily_idx = 0; quest_daily_idx < PLAYER_MAX_DAILY_QUESTS; ++quest_daily_idx)
-        if (GetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1+quest_daily_idx))
-            stmtIns.PExecute(GetGUIDLow(), GetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1+quest_daily_idx));
+    //for (uint32 quest_daily_idx = 0; quest_daily_idx < PLAYER_MAX_DAILY_QUESTS; ++quest_daily_idx)
+    //    if (GetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1 + quest_daily_idx))
+    //        stmtIns.PExecute(GetGUIDLow(), GetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1 + quest_daily_idx));
 
     m_DailyQuestChanged = false;
 }
@@ -18252,8 +18241,9 @@ void Player::_SaveSkills()
         uint16 field = itr->second.pos / 2;
         uint8 offset = itr->second.pos & 1;
 
-        uint16 value = GetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset);
-        uint16 max = GetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset);
+        uint32 valueData = GetUInt32Value(PLAYER_SKILL_VALUE_INDEX(itr->second.pos));
+        uint16 value = SKILL_VALUE(valueData);
+        uint16 max = SKILL_MAX(valueData);
 
         switch (itr->second.uState)
         {
@@ -21026,15 +21016,17 @@ void Player::SendAurasForTarget(Unit* target)
 
 void Player::SetDailyQuestStatus(uint32 quest_id)
 {
+    // FIXME
+    return;
     uint32 quest_daily_idx;
-    for (quest_daily_idx = 0; quest_daily_idx < PLAYER_MAX_DAILY_QUESTS; ++quest_daily_idx)
+    for(quest_daily_idx = 0; quest_daily_idx < PLAYER_MAX_DAILY_QUESTS; ++quest_daily_idx)
     {
-        if (!GetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1 + quest_daily_idx))
+        /*if(!GetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1+quest_daily_idx))
         {
             SetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1 + quest_daily_idx, quest_id);
             m_DailyQuestChanged = true;
             break;
-        }
+        }*/
     }
 
     // if first daily quest at curent day
@@ -21056,6 +21048,9 @@ void Player::SetMonthlyQuestStatus(uint32 quest_id)
 
 void Player::ResetDailyQuestStatus()
 {
+    // FIXME
+    return;
+
     uint32 dailyQuestCount = 0;
     for (uint32 quest_daily_idx = 0; quest_daily_idx < PLAYER_MAX_DAILY_QUESTS; ++quest_daily_idx)
     {
@@ -22594,28 +22589,25 @@ void Player::_LoadSkills(QueryResult *result)
                 continue;
             }
 
-            uint16 field = count / 2;
-            uint8 offset = count & 1;
+            // enable unlearn button for primary professions only
+            if (pSkill->categoryId == SKILL_CATEGORY_PROFESSION)
+                SetUInt32Value(PLAYER_SKILL_INDEX(count), MAKE_PAIR32(skill, 1));
+            else
+                SetUInt32Value(PLAYER_SKILL_INDEX(count), MAKE_PAIR32(skill, 0));
 
-            SetUInt16Value(PLAYER_SKILL_LINEID_0 + field, offset, skill);
-            uint16 step = 0;
+            SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(count), MAKE_SKILL_VALUE(value, max));
+            SetUInt32Value(PLAYER_SKILL_BONUS_INDEX(count), 0);
 
-            if (pSkill->categoryId == SKILL_CATEGORY_SECONDARY)
-                step = max / 75;
+            //if (pSkill->categoryId == SKILL_CATEGORY_SECONDARY)
+            //    step = max / 75;
 
             if (pSkill->categoryId == SKILL_CATEGORY_PROFESSION)
             {
-                step = max / 75;
+                //step = max / 75;
 
                 if (professionCount < 2)
                     SetUInt32Value(PLAYER_PROFESSION_SKILL_LINE_1 + professionCount++, skill);
             }
-
-            SetUInt16Value(PLAYER_SKILL_STEP_0 + field, offset, step);
-            SetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset, value);
-            SetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset, max);
-            SetUInt16Value(PLAYER_SKILL_MODIFIER_0 + field, offset, 0);
-            SetUInt16Value(PLAYER_SKILL_TALENT_0 + field, offset, 0);
 
             mSkillStatus.insert(SkillStatusMap::value_type(skill, SkillStatusData(count, SKILL_UNCHANGED)));
 
@@ -22635,15 +22627,9 @@ void Player::_LoadSkills(QueryResult *result)
 
     for (; count < PLAYER_MAX_SKILLS; ++count)
     {
-        uint16 field = count / 2;
-        uint8 offset = count & 1;
-
-        SetUInt16Value(PLAYER_SKILL_LINEID_0 + field, offset, 0);
-        SetUInt16Value(PLAYER_SKILL_STEP_0 + field, offset, 0);
-        SetUInt16Value(PLAYER_SKILL_RANK_0 + field, offset, 0);
-        SetUInt16Value(PLAYER_SKILL_MAX_RANK_0 + field, offset, 0);
-        SetUInt16Value(PLAYER_SKILL_MODIFIER_0 + field, offset, 0);
-        SetUInt16Value(PLAYER_SKILL_TALENT_0 + field, offset, 0);
+        SetUInt32Value(PLAYER_SKILL_INDEX(count), 0);
+        SetUInt32Value(PLAYER_SKILL_VALUE_INDEX(count), 0);
+        SetUInt32Value(PLAYER_SKILL_BONUS_INDEX(count), 0);
     }
 
     // special settings

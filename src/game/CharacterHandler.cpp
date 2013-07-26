@@ -179,7 +179,6 @@ void WorldSession::HandleCharEnum(QueryResult* result)
     ByteBuffer buffer;
 
     data.WriteBits(0, 23);
-    data.WriteBit(1);
     data.WriteBits(result ? result->GetRowCount() : 0, 17);
 
     if (result)
@@ -195,7 +194,11 @@ void WorldSession::HandleCharEnum(QueryResult* result)
             }
         }
         while (result->NextRow());
+    }
 
+    data.WriteBit(1);
+    if (!buffer.empty())
+    {
         data.FlushBits();
         data.append(buffer);
     }
@@ -235,18 +238,14 @@ void WorldSession::HandleCharEnumOpcode(WorldPacket& /*recv_data*/)
 
 void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
 {
+    // extract other data required for player creating
+    uint8 gender, skin, face, hairStyle, hairColor, facialHair, outfitId;
     std::string name;
     uint8 race_, class_;
 
-    recv_data >> name;
-
-    recv_data >> race_;
-    recv_data >> class_;
-
-    // extract other data required for player creating
-    uint8 gender, skin, face, hairStyle, hairColor, facialHair, outfitId;
-    recv_data >> gender >> skin >> face;
-    recv_data >> hairStyle >> hairColor >> facialHair >> outfitId;
+    recv_data >> class_ >> hairStyle >> facialHair >> race_;
+    recv_data >> face >> skin >> gender >> hairColor >> outfitId;
+    name = recv_data.ReadString(recv_data.ReadBits(8));
 
     WorldPacket data(SMSG_CHAR_CREATE, 1);                  // returned with diff.values in all cases
 
@@ -284,23 +283,25 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recv_data)
         return;
     }
 
+    // FIXME
     // prevent character creating Expansion race without Expansion account
-    if (raceEntry->expansion > Expansion())
-    {
-        data << (uint8)CHAR_CREATE_EXPANSION;
-        sLog.outError("Expansion %u account:[%d] tried to Create character with expansion %u race (%u)", Expansion(), GetAccountId(), raceEntry->expansion, race_);
-        SendPacket(&data);
-        return;
-    }
+    //if (raceEntry->expansion > Expansion())
+    //{
+    //    data << (uint8)CHAR_CREATE_EXPANSION;
+    //    sLog.outError("Expansion %u account:[%d] tried to Create character with expansion %u race (%u)", Expansion(), GetAccountId(), raceEntry->expansion, race_);
+    //    SendPacket(&data);
+    //    return;
+    //}
 
+    // FIXME
     // prevent character creating Expansion class without Expansion account
-    if (classEntry->expansion > Expansion())
-    {
-        data << (uint8)CHAR_CREATE_EXPANSION_CLASS;
-        sLog.outError("Expansion %u account:[%d] tried to Create character with expansion %u class (%u)", Expansion(), GetAccountId(), classEntry->expansion, class_);
-        SendPacket(&data);
-        return;
-    }
+    //if (classEntry->expansion > Expansion())
+    //{
+    //    data << (uint8)CHAR_CREATE_EXPANSION_CLASS;
+    //    sLog.outError("Expansion %u account:[%d] tried to Create character with expansion %u class (%u)", Expansion(), GetAccountId(), classEntry->expansion, class_);
+    //    SendPacket(&data);
+    //    return;
+    //}
 
     // prevent character creating with invalid name
     if (!normalizePlayerName(name))
@@ -566,6 +567,13 @@ void WorldSession::HandleCharDeleteOpcode(WorldPacket& recv_data)
 
 void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
 {
+    ObjectGuid playerGuid;
+
+    recv_data.ReadGuidMask<5, 7, 0, 1, 2, 3, 4, 6>(playerGuid);
+    recv_data.ReadGuidBytes<6, 4, 3, 5, 0, 2, 7, 1>(playerGuid);
+
+    DEBUG_LOG("WORLD: Received opcode Player Logon Message from %s", playerGuid.GetString().c_str());
+
     if (PlayerLoading() || GetPlayer() != NULL)
     {
         sLog.outError("Player tryes to login again, AccountId = %d", GetAccountId());
@@ -573,13 +581,6 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
     }
 
     m_playerLoading = true;
-
-    ObjectGuid playerGuid;
-
-    recv_data.ReadGuidMask<2, 3, 0, 6, 4, 5, 1, 7>(playerGuid);
-    recv_data.ReadGuidBytes<2, 7, 0, 3, 5, 6, 1, 4>(playerGuid);
-
-    DEBUG_LOG("WORLD: Recvd Player Logon Message from %s", playerGuid.GetString().c_str());
 
     // check if character is currently a playerbot, if so then logout
     Player *checkChar = sObjectMgr.GetPlayer(playerGuid);

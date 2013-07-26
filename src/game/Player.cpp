@@ -1611,31 +1611,16 @@ bool Player::BuildEnumData(QueryResult* result, ByteBuffer* data, ByteBuffer* bu
     uint32 petFamily  = 0;
     uint32 char_flags = 0;
 
-    data->WriteGuidMask<3>(guid);
-    data->WriteGuidMask<1, 7, 2>(guildGuid);
+    data->WriteGuidMask<7, 0, 4>(guid);
+    data->WriteGuidMask<2>(guildGuid);
+    data->WriteGuidMask<5, 3>(guid);
     data->WriteBits(name.length(), 7);
-    data->WriteGuidMask<4, 7>(guid);
-    data->WriteGuidMask<3>(guildGuid);
-    data->WriteGuidMask<5>(guid);
-    data->WriteGuidMask<6>(guildGuid);
-    data->WriteGuidMask<1>(guid);
-    data->WriteGuidMask<5, 4>(guildGuid);
+    data->WriteGuidMask<0, 5, 3>(guildGuid);
     data->WriteBit(atLoginFlags & AT_LOGIN_FIRST);
-    data->WriteGuidMask<0, 2, 6>(guid);
-    data->WriteGuidMask<0>(guildGuid);
-
-        // show pet at selection character in character list only for non-ghost character
-        if (result && !(playerFlags & PLAYER_FLAGS_GHOST) && (pClass == CLASS_WARLOCK || pClass == CLASS_HUNTER || pClass == CLASS_DEATH_KNIGHT))
-        {
-            uint32 entry = fields[16].GetUInt32();
-            CreatureInfo const* cInfo = sCreatureStorage.LookupEntry<CreatureInfo>(entry);
-            if (cInfo)
-            {
-                petDisplayId = fields[17].GetUInt32();
-                petLevel     = fields[18].GetUInt32();
-                petFamily    = cInfo->family;
-            }
-        }
+    data->WriteGuidMask<6, 7>(guildGuid);
+    data->WriteGuidMask<1>(guid);
+    data->WriteGuidMask<4, 1>(guildGuid);
+    data->WriteGuidMask<2, 6>(guid);
 
     if(playerFlags & PLAYER_FLAGS_HIDE_HELM)
         char_flags |= CHARACTER_FLAG_HIDE_HELM;
@@ -1645,7 +1630,7 @@ bool Player::BuildEnumData(QueryResult* result, ByteBuffer* data, ByteBuffer* bu
         char_flags |= CHARACTER_FLAG_GHOST;
     if(atLoginFlags & AT_LOGIN_RENAME)
         char_flags |= CHARACTER_FLAG_RENAME;
-    if(sWorld.getConfig(CONFIG_BOOL_DECLINED_NAMES_USED))
+    if (sWorld.getConfig(CONFIG_BOOL_DECLINED_NAMES_USED))
     {
         if(!fields[21].GetCppString().empty())
             char_flags |= CHARACTER_FLAG_DECLINED;
@@ -1653,7 +1638,24 @@ bool Player::BuildEnumData(QueryResult* result, ByteBuffer* data, ByteBuffer* bu
     else
         char_flags |= CHARACTER_FLAG_DECLINED;
 
-    *buffer << uint8(pClass);                                // class
+    // show pet at selection character in character list only for non-ghost character
+    if (result && !(playerFlags & PLAYER_FLAGS_GHOST) && (pClass == CLASS_WARLOCK || pClass == CLASS_HUNTER || pClass == CLASS_DEATH_KNIGHT))
+    {
+        uint32 entry = fields[16].GetUInt32();
+        CreatureInfo const* cInfo = sCreatureStorage.LookupEntry<CreatureInfo>(entry);
+        if(cInfo)
+        {
+            petDisplayId = fields[17].GetUInt32();
+            petLevel     = fields[18].GetUInt32();
+            petFamily    = cInfo->family;
+        }
+    }
+
+    *buffer << uint32(char_flags);                          // character flags
+    *buffer << uint32(petFamily);                           // Pet DisplayID
+    *buffer << fields[12].GetFloat();                       // z
+    buffer->WriteGuidBytes<7>(guid);
+    buffer->WriteGuidBytes<6>(guildGuid);
 
     Tokens tdata = Tokens(fields[19].GetString(),' ');
     for (uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
@@ -1663,8 +1665,8 @@ bool Player::BuildEnumData(QueryResult* result, ByteBuffer* data, ByteBuffer* bu
         const ItemPrototype * proto = ObjectMgr::GetItemPrototype(item_id);
         if (!proto)
         {
-            *buffer << uint8(0);
             *buffer << uint32(0);
+            *buffer << uint8(0);
             *buffer << uint32(0);
             continue;
         }
@@ -1683,56 +1685,61 @@ bool Player::BuildEnumData(QueryResult* result, ByteBuffer* data, ByteBuffer* bu
                 break;
         }
 
-        *buffer << uint8(proto->InventoryType);
         *buffer << uint32(proto->DisplayInfoID);
+        *buffer << uint8(proto->InventoryType);
         *buffer << uint32(enchant ? enchant->aura_id : 0);
     }
 
     for (int32 i = 0; i < 4; i++)
     {
-        *buffer << uint8(0);
         *buffer << uint32(0);
+        *buffer << uint8(0);
         *buffer << uint32(0);
     }
 
-    *buffer << uint32(petFamily);                           // Pet DisplayID
-    buffer->WriteGuidBytes<2>(guildGuid);
-    *buffer << uint8(fields[20].GetUInt8());                // char order id
-    *buffer << uint8((playerBytes >> 16) & 0xFF);           // Hair style
-    buffer->WriteGuidBytes<3>(guildGuid);
-    *buffer << uint32(petDisplayId);                        // Pet DisplayID
-    *buffer << uint32(char_flags);                          // character flags
-    *buffer << uint8((playerBytes >> 24) & 0xFF);           // Hair color
-    buffer->WriteGuidBytes<4>(guid);
-    *buffer << uint32(fields[9].GetUInt32());               // map
-    buffer->WriteGuidBytes<5>(guildGuid);
-    *buffer << fields[12].GetFloat();                       // z
-    buffer->WriteGuidBytes<6>(guildGuid);
-    *buffer << uint32(petLevel);                            // pet level
-    buffer->WriteGuidBytes<3>(guid);
-    *buffer << fields[11].GetFloat();                       // y
-    // character customize flags
-    *buffer << uint32(atLoginFlags & AT_LOGIN_CUSTOMIZE ? CHAR_CUSTOMIZE_FLAG_CUSTOMIZE : CHAR_CUSTOMIZE_FLAG_NONE);
-
     uint32 playerBytes2 = fields[6].GetUInt32();
-    *buffer << uint8(playerBytes2 & 0xFF);                  // facial hair
-    buffer->WriteGuidBytes<7>(guid);
-    *buffer << uint8(gender);                               // Gender
-    buffer->append(name.c_str(), name.length());
-    *buffer << uint8((playerBytes >> 8) & 0xFF);            // face
-
-    buffer->WriteGuidBytes<0, 2>(guid);
-    buffer->WriteGuidBytes<1, 7>(guildGuid);
 
     *buffer << fields[10].GetFloat();                       // x
-    *buffer << uint8(playerBytes & 0xFF);                   // skin
-    *buffer << uint8(pRace);                                // Race
-    *buffer << uint8(level);                                // Level
+    *buffer << uint8(pClass);                               // class
+    buffer->WriteGuidBytes<5>(guid);
+    *buffer << fields[11].GetFloat();                       // y
+    buffer->WriteGuidBytes<3>(guildGuid);
     buffer->WriteGuidBytes<6>(guid);
-    buffer->WriteGuidBytes<4, 0>(guildGuid);
-    buffer->WriteGuidBytes<5, 1>(guid);
+    *buffer << uint32(petLevel);                            // pet level
+    *buffer << uint32(petDisplayId);                        // Pet DisplayID
 
+    buffer->WriteGuidBytes<2, 1>(guid);
+    *buffer << uint8((playerBytes >> 24) & 0xFF);           // Hair color
+    *buffer << uint8(playerBytes2 & 0xFF);                  // facial hair
+    buffer->WriteGuidBytes<2>(guildGuid);
     *buffer << uint32(zone);                                // Zone id
+    *buffer << uint8(fields[20].GetUInt8());                // char order id
+    buffer->WriteGuidBytes<0>(guid);
+    buffer->WriteGuidBytes<1>(guildGuid);
+
+    *buffer << uint8(playerBytes & 0xFF);                   // skin
+    buffer->WriteGuidBytes<4>(guid);
+    buffer->WriteGuidBytes<5>(guildGuid);
+    buffer->WriteStringData(name);
+    buffer->WriteGuidBytes<0>(guildGuid);
+    *buffer << uint8(level);                                // Level
+    buffer->WriteGuidBytes<3>(guid);
+
+    buffer->WriteGuidBytes<7>(guildGuid);
+
+    *buffer << uint8((playerBytes >> 16) & 0xFF);           // Hair style
+    buffer->WriteGuidBytes<4>(guildGuid);
+    *buffer << uint8(gender);                               // Gender
+    *buffer << uint32(fields[9].GetUInt32());               // map
+
+    // character customize change flags
+    if (atLoginFlags & AT_LOGIN_CUSTOMIZE)
+        *buffer << uint32(CHAR_CUSTOMIZE_FLAG_CUSTOMIZE);
+    else
+        *buffer << uint32(CHAR_CUSTOMIZE_FLAG_NONE);
+
+    *buffer << uint8(pRace);                                // Race
+    *buffer << uint8((playerBytes >> 8) & 0xFF);            // face
 
     return true;
 }
@@ -6611,6 +6618,7 @@ Team Player::TeamForRace(uint8 race)
     {
         case 7: return ALLIANCE;
         case 1: return HORDE;
+        // FIXME: add neutral pandaren support
     }
 
     sLog.outError("Race %u have wrong teamid %u in DBC: wrong DBC files?",uint32(race),rEntry->TeamID);

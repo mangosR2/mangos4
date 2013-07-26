@@ -306,11 +306,7 @@ int WorldSocket::HandleWowConnection(WorldPacket& recvPacket)
 
 int WorldSocket::SendAuthChallenge()
 {
-    WorldPacket packet (SMSG_AUTH_CHALLENGE);
-
-    packet << uint16(0);
-    packet << uint8(1);
-    packet << uint32(m_Seed);
+    WorldPacket packet(SMSG_AUTH_CHALLENGE, 37);
 
     BigNumber seed1;
     seed1.SetRand(16 * 8);
@@ -319,6 +315,9 @@ int WorldSocket::SendAuthChallenge()
     BigNumber seed2;
     seed2.SetRand(16 * 8);
     packet.append(seed2.AsByteArray(16), 16);               // new encryption seeds
+
+    packet << uint32(m_Seed);
+    packet << uint8(1);
 
     if (SendPacket(packet) == -1)
         return -1;
@@ -895,8 +894,10 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     WorldPacket packet;
 
     recvPacket.read_skip<uint32>();
-    recvPacket.read_skip<uint32>();
+    recvPacket.read_skip<uint16>();
     recvPacket.read_skip<uint8>();
+    recvPacket >> clientBuild;
+    recvPacket.read_skip<uint16>();
     recvPacket >> digest[10];
     recvPacket >> digest[18];
     recvPacket >> digest[12];
@@ -909,7 +910,6 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     recvPacket >> digest[7];
     recvPacket >> digest[16];
     recvPacket >> digest[3];
-    recvPacket >> clientBuild;
     recvPacket >> digest[8];
     recvPacket.read_skip<uint32>();
     recvPacket.read_skip<uint8>();
@@ -1107,18 +1107,18 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     sha.UpdateBigNumbers (&K, NULL);
     sha.Finalize ();
 
-    if (memcmp (sha.GetDigest (), digest, 20))
-    {
-        packet.Initialize (SMSG_AUTH_RESPONSE, 2);
-        packet.WriteBit(false);
-        packet.WriteBit(false);
-        packet << uint8 (AUTH_FAILED);
+    //if (memcmp (sha.GetDigest (), digest, 20))
+    //{
+    //    packet.Initialize (SMSG_AUTH_RESPONSE, 2);
+    //    packet.WriteBit(false);
+    //    packet.WriteBit(false);
+    //    packet << uint8 (AUTH_FAILED);
 
-        SendPacket (packet);
+    //    SendPacket (packet);
 
-        sLog.outError ("WorldSocket::HandleAuthSession: Sent Auth Response (authentification failed).");
-        return -1;
-    }
+    //    sLog.outError ("WorldSocket::HandleAuthSession: Sent Auth Response (authentification failed).");
+    //    return -1;
+    //}
 
     std::string address = GetRemoteAddress ();
 
@@ -1156,8 +1156,8 @@ int WorldSocket::HandlePing(WorldPacket& recvPacket)
     uint32 latency;
 
     // Get the ping packet content
-    recvPacket >> ping;
     recvPacket >> latency;
+    recvPacket >> ping;
 
     if (m_LastPingTime == ACE_Time_Value::zero)
         m_LastPingTime = ACE_OS::gettimeofday();            // for 1st ping

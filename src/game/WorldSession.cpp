@@ -773,6 +773,83 @@ void WorldSession::SendAuthWaitQue(uint32 position)
     }
 }
 
+struct ExpansionInfoStrunct
+{
+    uint8 raceOrClass;
+    uint8 expansion;
+};
+
+ExpansionInfoStrunct classExpansionInfo[MAX_CLASSES] =
+{
+    { 1, 0 },
+    { 2, 0 },
+    { 3, 0 },
+    { 4, 0 },
+    { 5, 0 },
+    { 6, 2 },
+    { 7, 0 },
+    { 8, 0 },
+    { 9, 0 },
+    { 10, 4 },
+    { 11, 0 }
+};
+
+ExpansionInfoStrunct raceExpansionInfo[MAX_PLAYABLE_RACES] =
+{
+    { 1, 0 },
+    { 2, 0 },
+    { 3, 0 },
+    { 4, 0 },
+    { 5, 0 },
+    { 6, 0 },
+    { 7, 0 },
+    { 8, 0 },
+    { 9, 3 },
+    { 10, 1 },
+    { 11, 1 },
+    { 22, 3 },
+    { 24, 4 },
+    { 25, 4 },
+    { 26, 4 }
+};
+
+void WorldSession::SendAuthResponse(uint8 code, bool queued, uint32 queuePos)
+{
+    WorldPacket packet(SMSG_AUTH_RESPONSE, 1 /*bits*/ + 4 + 1 + 4 + 1 + 4 + 1 + 1 + (queued ? 4 : 0));
+    packet.WriteBit(1);                                     // has account info
+    packet.WriteBits(11, 25);                               // Activation count for classes
+    packet.WriteBit(0);
+    packet.WriteBit(0);
+    packet.WriteBits(0, 22);                                // Activate character template windows/button
+    packet.WriteBits(15, 25);                               // Activation count for races
+
+    packet.WriteBit(queued);                                // IsInQueue
+
+    // account info
+    for (int i = 0; i < 15; ++i)
+    {
+        packet << uint8(raceExpansionInfo[i].expansion);
+        packet << uint8(raceExpansionInfo[i].raceOrClass);
+    }
+
+    packet << uint32(0);
+    packet << uint32(0);
+    packet << uint8(0);
+    packet << uint8(Expansion());                           // Unknown, these two show the same
+    packet << uint8(Expansion());                           // Unknown, these two show the same
+
+    for (int i = 0; i < 11; ++i)
+    {
+        packet << uint8(classExpansionInfo[i].raceOrClass);
+        packet << uint8(classExpansionInfo[i].expansion);
+    }
+
+    packet << uint32(0);
+    packet << uint8(code);
+
+    SendPacket(&packet);
+}
+
 void WorldSession::LoadGlobalAccountData()
 {
     LoadAccountData(

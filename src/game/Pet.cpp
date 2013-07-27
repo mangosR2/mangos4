@@ -3232,10 +3232,10 @@ Unit* Pet::SelectPreferredTargetForSpell(SpellEntry const* spellInfo)
     if (spellInfo->GetPreventionType() == SPELL_PREVENTION_TYPE_PACIFY && HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PACIFIED))
         return NULL;
 
-    SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(spellInfo->rangeIndex);
+    SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(spellInfo->GetRangeIndex());
 
     float max_range_friendly = GetSpellMaxRange(srange,true);
-    float max_range_unfriendly = (spellInfo->rangeIndex == SPELL_RANGE_IDX_COMBAT) ?
+    float max_range_unfriendly = (spellInfo->GetRangeIndex() == SPELL_RANGE_IDX_COMBAT) ?
                                     GetObjectBoundingRadius() + 1.0f :
                                     GetSpellMaxRange(srange,false);
 
@@ -3328,7 +3328,7 @@ Unit* Pet::SelectPreferredTargetForSpell(SpellEntry const* spellInfo)
 
     if (target && target != this)
     {
-        if (spellInfo->rangeIndex == SPELL_RANGE_IDX_COMBAT)
+        if (spellInfo->GetRangeIndex() == SPELL_RANGE_IDX_COMBAT)
             max_range_unfriendly = GetMeleeAttackDistance(target);
 
         bool friendly = IsFriendlyTo(target);

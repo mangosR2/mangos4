@@ -1052,7 +1052,7 @@ void BattleGroundQueue::Update(BattleGroundTypeId bgTypeId, BattleGroundBracketI
 
 BattleGroundMgr::BattleGroundMgr() : m_ArenaTesting(false)
 {
-    for (uint8 i = BATTLEGROUND_TYPE_NONE; i < MAX_BATTLEGROUND_TYPE_ID; ++i)
+    for (uint32 i = BATTLEGROUND_TYPE_NONE; i < MAX_BATTLEGROUND_TYPE_ID; ++i)
         m_BattleGrounds[i].clear();
     m_NextRatingDiscardUpdate = GetRatingDiscardTimer();
     m_Testing = false;

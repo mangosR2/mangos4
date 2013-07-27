@@ -995,7 +995,7 @@ uint32 Unit::DealDamage(DamageInfo* damageInfo)
             if (!i->GetHolder() || i->GetHolder()->IsDeleted())
                 continue;
 
-            if ((*i)->GetSpellProto()->GetSpellFamilyName() == SPELLFAMILY_PALADIN && (*i)->GetSpellProto()->SpellIconID == 2137)
+            if ((*i)->GetSpellProto()->GetSpellFamilyName() == SPELLFAMILY_PALADIN && (*i)->GetSpellProto()->GetSpellIconID() == 2137)
                 if ( urand(0,100) < (*i)->GetSpellProto()->GetProcChance() )
                     damageInfo->damage *= 0.5f;
         }
@@ -1196,7 +1196,7 @@ uint32 Unit::DealDamage(DamageInfo* damageInfo)
             AuraList const& vDummyAuras = pVictim->GetAurasByType(SPELL_AURA_DUMMY);
             for (AuraList::const_iterator itr = vDummyAuras.begin(); itr != vDummyAuras.end(); ++itr)
             {
-                if ((*itr)->GetSpellProto()->SpellIconID == 1654)
+                if ((*itr)->GetSpellProto()->GetSpellIconID() == 1654)
                 {
                     spiritOfRedemtionTalentReady = (*itr);
                     break;
@@ -2632,7 +2632,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
             {
                 SpellEntry const* itr_spellProto = (*itr)->GetSpellProto();
                 // Frost Warding (chance full absorb)
-                if (itr_spellProto->GetSpellFamilyName() == SPELLFAMILY_MAGE && itr_spellProto->SpellIconID == 501)
+                if (itr_spellProto->GetSpellFamilyName() == SPELLFAMILY_MAGE && itr_spellProto->GetSpellIconID() == 501)
                 {
                     // chance stored in next dummy effect
                     chance = itr_spellProto->CalculateSimpleValue(EFFECT_INDEX_1);
@@ -2684,7 +2684,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
                 case SPELLFAMILY_GENERIC:
                 {
                     // Astral Shift
-                    if (spellProto->SpellIconID == 3066)
+                    if (spellProto->GetSpellIconID() == 3066)
                     {
                         //reduces all damage taken while stun, fear or silence
                         if (unitflag & (UNIT_FLAG_STUNNED|UNIT_FLAG_FLEEING|UNIT_FLAG_SILENCED))
@@ -2692,7 +2692,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
                         continue;
                     }
                     // Nerves of Steel
-                    if (spellProto->SpellIconID == 2115)
+                    if (spellProto->GetSpellIconID() == 2115)
                     {
                         // while affected by Stun and Fear
                         if (unitflag&(UNIT_FLAG_STUNNED|UNIT_FLAG_FLEEING))
@@ -2700,7 +2700,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
                         continue;
                     }
                     // Spell Deflection
-                    if (spellProto->SpellIconID == 3006)
+                    if (spellProto->GetSpellIconID() == 3006)
                     {
                         // You have a chance equal to your Parry chance
                         if (damageInfo->damageType == SPELL_DIRECT_DAMAGE &&             // Only for direct spell damage
@@ -2733,7 +2733,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
                 case SPELLFAMILY_DRUID:
                 {
                     // Primal Tenacity
-                    if (spellProto->SpellIconID == 2253)
+                    if (spellProto->GetSpellIconID() == 2253)
                     {
                         //reduces all damage taken while Stunned and in Cat Form
                         if (GetShapeshiftForm() == FORM_CAT && (unitflag & UNIT_FLAG_STUNNED))
@@ -2753,7 +2753,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
                 case SPELLFAMILY_ROGUE:
                 {
                     // Cheat Death (make less prio with Guardian Spirit case)
-                    if (spellProto->SpellIconID == 2109)
+                    if (spellProto->GetSpellIconID() == 2109)
                     {
                         if (!preventDeathSpell &&
                             !HasSpellCooldown(31231) &&
@@ -2771,7 +2771,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
                 case SPELLFAMILY_PALADIN:
                 {
                     // Ardent Defender
-                    if (spellProto->SpellIconID == 2135 && GetTypeId() == TYPEID_PLAYER)
+                    if (spellProto->GetSpellIconID() == 2135 && GetTypeId() == TYPEID_PLAYER)
                     {
                         int32 remainingHealth = GetHealth() - RemainingDamage;
                         uint32 allowedHealth = GetMaxHealth() * 0.35f;
@@ -2802,7 +2802,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
                 case SPELLFAMILY_PRIEST:
                 {
                     // Guardian Spirit
-                    if (spellProto->SpellIconID == 2873)
+                    if (spellProto->GetSpellIconID() == 2873)
                     {
                         preventDeathSpell = (*i)->GetSpellProto();
                         preventDeathAmount = (*i)->GetModifier()->m_amount;
@@ -2843,7 +2843,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
                 case SPELLFAMILY_SHAMAN:
                 {
                     // Astral Shift
-                    if (spellProto->SpellIconID == 3066)
+                    if (spellProto->GetSpellIconID() == 3066)
                     {
                         //reduces all damage taken while stun, fear or silence
                         if (unitflag & (UNIT_FLAG_STUNNED|UNIT_FLAG_FLEEING|UNIT_FLAG_SILENCED))
@@ -2855,7 +2855,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
                 case SPELLFAMILY_DEATHKNIGHT:
                 {
                     // Shadow of Death
-                    if (spellProto->SpellIconID == 1958)
+                    if (spellProto->GetSpellIconID() == 1958)
                     {
                         // TODO: absorb only while transform
                         continue;
@@ -2906,7 +2906,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
                         continue;
                     }
                     // Will of Necropolis
-                    if (spellProto->SpellIconID == 857)
+                    if (spellProto->GetSpellIconID() == 857)
                     {
                         // Apply absorb only on damage below 35% hp
                         int32 absorbableDamage = RemainingDamage + 0.35f * GetMaxHealth() - GetHealth();
@@ -3004,7 +3004,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
 
             // Incanter's Absorption
             if (itr_spellProto->GetSpellFamilyName() == SPELLFAMILY_GENERIC &&
-                itr_spellProto->SpellIconID == 2941)
+                itr_spellProto->GetSpellIconID() == 2941)
             {
                 int32 amount = int32(incanterAbsorption * (*itr)->GetModifier()->m_amount / 100);
 
@@ -3073,7 +3073,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
             case SPELLFAMILY_ROGUE:
             {
                 // Cheat Death
-                if (preventDeathSpell->SpellIconID == 2109)
+                if (preventDeathSpell->GetSpellIconID() == 2109)
                 {
                     CastSpell(this,31231,true);
                     AddSpellCooldown(31231,0,time(NULL)+60);
@@ -3087,7 +3087,7 @@ void Unit::CalculateDamageAbsorbAndResist(Unit* pCaster, DamageInfo* damageInfo,
             case SPELLFAMILY_PRIEST:
             {
                 // Guardian Spirit
-                if (preventDeathSpell->SpellIconID == 2873)
+                if (preventDeathSpell->GetSpellIconID() == 2873)
                 {
                     int32 healAmount = GetMaxHealth() * preventDeathAmount / 100;
                     CastCustomSpell(this, 48153, &healAmount, NULL, NULL, true);
@@ -3870,7 +3870,7 @@ SpellMissInfo Unit::SpellResistResult(Unit* pVictim, SpellEntry const* spellInfo
         return SPELL_MISS_NONE;
 
     // Spell this type can't be resisted
-    if ((spellInfo->SchoolMask & SPELL_SCHOOL_MASK_NORMAL) || spellInfo->HasAttribute(SPELL_ATTR_EX3_CANT_MISS))
+    if ((spellInfo->GetSchoolMask() & SPELL_SCHOOL_MASK_NORMAL) || spellInfo->HasAttribute(SPELL_ATTR_EX3_CANT_MISS))
         return SPELL_MISS_NONE;
 
     // Impossible resist friendly spells
@@ -3942,7 +3942,7 @@ SpellMissInfo Unit::SpellResistResult(Unit* pVictim, SpellEntry const* spellInfo
         return SPELL_MISS_RESIST;
 
     // Part 2 not applyed to holy and melee spells.
-    if (spellInfo->SchoolMask & (SPELL_SCHOOL_MASK_NORMAL | SPELL_SCHOOL_MASK_HOLY))
+    if (spellInfo->GetSchoolMask() & (SPELL_SCHOOL_MASK_NORMAL | SPELL_SCHOOL_MASK_HOLY))
         return SPELL_MISS_NONE;
 
     // Calculate plain resistance chances (binary resistances part 2, formula from http://www.wowwiki.com/Resistance)
@@ -3950,9 +3950,9 @@ SpellMissInfo Unit::SpellResistResult(Unit* pVictim, SpellEntry const* spellInfo
     // Spell hit will not reduce this chance. It is assumed that this percentage is exactly the damage reduction percentage given above."
 
     // Get base resistance values
-    uint32 targetResistance = pVictim->GetResistance(SpellSchoolMask(spellInfo->SchoolMask));
+    uint32 targetResistance = pVictim->GetResistance(SpellSchoolMask(spellInfo->GetSchoolMask()));
 
-    uint32 ignoreTargetResistance = GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_TARGET_RESISTANCE, spellInfo->SchoolMask);
+    uint32 ignoreTargetResistance = GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_TARGET_RESISTANCE, spellInfo->GetSchoolMask());
     if (targetResistance < ignoreTargetResistance)
         targetResistance = 0;
     else
@@ -5881,10 +5881,11 @@ void Unit::RemoveAuraHolderFromStack(uint32 spellId, uint32 stackAmount, ObjectG
 
 void Unit::RemoveAurasDueToSpell(uint32 spellId, SpellAuraHolderPtr except, AuraRemoveMode mode)
 {
-    SpellEntry const* spellEntry = sSpellStore.LookupEntry(spellId);
-    if (spellEntry && spellEntry->SpellDifficultyId && IsInWorld() && GetMap()->IsDungeon())
-        if (SpellEntry const* spellDiffEntry = GetSpellEntryByDifficulty(spellEntry->SpellDifficultyId, GetMap()->GetDifficulty(), GetMap()->IsRaid()))
-            spellId = spellDiffEntry->Id;
+    // FIXME
+    //SpellEntry const* spellEntry = sSpellStore.LookupEntry(spellId);
+    //if (spellEntry && spellEntry->SpellDifficultyId && IsInWorld() && GetMap()->IsDungeon())
+    //    if (SpellEntry const* spellDiffEntry = GetSpellEntryByDifficulty(spellEntry->SpellDifficultyId, GetMap()->GetDifficulty(), GetMap()->IsRaid()))
+    //        spellId = spellDiffEntry->Id;
 
     SpellAuraHolderBounds bounds = GetSpellAuraHolderBounds(spellId);
     for (SpellAuraHolderMap::iterator iter = bounds.first; iter != bounds.second; )
@@ -6541,10 +6542,11 @@ bool Unit::HasAura(uint32 spellId, SpellEffectIndex effIndex) const
 
 bool Unit::HasAuraOfDifficulty(uint32 spellId) const
 {
-    SpellEntry const* spellEntry = sSpellStore.LookupEntry(spellId);
-    if (spellEntry && spellEntry->SpellDifficultyId && IsInWorld() && GetMap()->IsDungeon())
-        if (SpellEntry const* spellDiffEntry = GetSpellEntryByDifficulty(spellEntry->SpellDifficultyId, GetMap()->GetDifficulty(), GetMap()->IsRaid()))
-            spellId = spellDiffEntry->Id;
+    // FIXME
+    //SpellEntry const* spellEntry = sSpellStore.LookupEntry(spellId);
+    //if (spellEntry && spellEntry->SpellDifficultyId && IsInWorld() && GetMap()->IsDungeon())
+    //    if (SpellEntry const* spellDiffEntry = GetSpellEntryByDifficulty(spellEntry->SpellDifficultyId, GetMap()->GetDifficulty(), GetMap()->IsRaid()))
+    //        spellId = spellDiffEntry->Id;
 
     MAPLOCK_READ(const_cast<Unit*>(this), MAP_LOCK_TYPE_AURAS);
     return m_spellAuraHolders.find(spellId) != m_spellAuraHolders.end();
@@ -8191,7 +8193,7 @@ void Unit::SpellDamageBonusDone(DamageInfo* damageInfo, uint32 stack)
                 AuraList const& aurasCrit = GetAurasByType(SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
                 for (AuraList::const_iterator itr = aurasCrit.begin(); itr != aurasCrit.end(); itr++)
                 {
-                    if ((*itr)->GetSpellProto()->SpellIconID == 3053)
+                    if ((*itr)->GetSpellProto()->GetSpellIconID() == 3053)
                     {
                         calculatedBonus = (*itr)->GetSpellProto()->GetSpellEffect(EFFECT_INDEX_1)->CalculateSimpleValue();
                         break;
@@ -8331,7 +8333,7 @@ void Unit::SpellDamageBonusDone(DamageInfo* damageInfo, uint32 stack)
             case 7277:
             {
                 // Merciless Combat
-                if ((*i)->GetSpellProto()->SpellIconID == 2656)
+                if ((*i)->GetSpellProto()->GetSpellIconID() == 2656)
                 {
                     if (pVictim->HasAuraState(AURA_STATE_HEALTHLESS_35_PERCENT))
                         DoneTotalMod *= (100.0f+(*i)->GetModifier()->m_amount)/100.0f;
@@ -8391,7 +8393,7 @@ void Unit::SpellDamageBonusDone(DamageInfo* damageInfo, uint32 stack)
         case SPELLFAMILY_MAGE:
         {
             // Ice Lance
-            if (damageInfo->GetSpellProto()->SpellIconID == 186)
+            if (damageInfo->GetSpellProto()->GetSpellIconID() == 186)
             {
                 if (pVictim->isFrozen() || IsIgnoreUnitState(damageInfo->GetSpellProto(), IGNORE_UNIT_TARGET_NON_FROZEN))
                 {
@@ -8452,7 +8454,7 @@ void Unit::SpellDamageBonusDone(DamageInfo* damageInfo, uint32 stack)
                     Unit::AuraList const& tf = GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
                     for(Unit::AuraList::const_iterator i = tf.begin(); i != tf.end(); ++i)
                     {
-                        if ((*i)->GetSpellProto()->SpellIconID == 2848 && (*i)->GetEffIndex() == 1)
+                        if ((*i)->GetSpellProto()->GetSpellIconID() == 2848 && (*i)->GetEffIndex() == 1)
                         {
                             DoneTotalMod *= ((*i)->GetModifier()->m_amount+100.0f) / 100.0f;
                             break;
@@ -8494,7 +8496,7 @@ void Unit::SpellDamageBonusDone(DamageInfo* damageInfo, uint32 stack)
                     Unit::AuraList const& improvedSwarm = GetAurasByType(SPELL_AURA_DUMMY);
                     for(Unit::AuraList::const_iterator iter = improvedSwarm.begin(); iter != improvedSwarm.end(); ++iter)
                     {
-                        if ((*iter)->GetSpellProto()->SpellIconID == 1771)
+                        if ((*iter)->GetSpellProto()->GetSpellIconID() == 1771)
                         {
                             DoneTotalMod *= ((*iter)->GetModifier()->m_amount+100.0f) / 100.0f;
                             break;
@@ -8809,7 +8811,7 @@ bool Unit::IsSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                     case SPELLFAMILY_MAGE:
                     {
                         // Fire Blast
-                        if (spellProto->GetSpellFamilyFlags().test<CF_MAGE_FIRE_BLAST>() && spellProto->SpellIconID == 12)
+                        if (spellProto->GetSpellFamilyFlags().test<CF_MAGE_FIRE_BLAST>() && spellProto->GetSpellIconID() == 12)
                         {
                             // Glyph of Fire Blast
                             if (pVictim->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_STUNNED) || pVictim->isInRoots())
@@ -8829,7 +8831,7 @@ bool Unit::IsSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                             {
                                 // Improved Flash Heal
                                 if ((*i)->GetSpellProto()->GetSpellFamilyName() == SPELLFAMILY_PRIEST &&
-                                    (*i)->GetSpellProto()->SpellIconID == 2542)
+                                    (*i)->GetSpellProto()->GetSpellIconID() == 2542)
                                 {
                                     crit_chance+=(*i)->GetModifier()->m_amount;
                                     break;
@@ -8847,7 +8849,7 @@ bool Unit::IsSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                                 Unit::AuraList const& improvedSwarm = GetAurasByType(SPELL_AURA_DUMMY);
                                 for(Unit::AuraList::const_iterator iter = improvedSwarm.begin(); iter != improvedSwarm.end(); ++iter)
                                 {
-                                    if ((*iter)->GetSpellProto()->SpellIconID == 1771)
+                                    if ((*iter)->GetSpellProto()->GetSpellIconID() == 1771)
                                     {
                                         crit_chance += (*iter)->GetModifier()->m_amount;
                                         break;
@@ -8861,7 +8863,7 @@ bool Unit::IsSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                             AuraList const& ImprovedAura = GetAurasByType(SPELL_AURA_DUMMY);
                             for(AuraList::const_iterator iter = ImprovedAura.begin(); iter != ImprovedAura.end(); ++iter)
                             {
-                                if((*iter)->GetEffIndex() == 0 && (*iter)->GetSpellProto()->SpellIconID == 109 && (*iter)->GetSpellProto()->GetSpellFamilyName() == SPELLFAMILY_DRUID)
+                                if((*iter)->GetEffIndex() == 0 && (*iter)->GetSpellProto()->GetSpellIconID() == 109 && (*iter)->GetSpellProto()->GetSpellFamilyName() == SPELLFAMILY_DRUID)
                                 {
                                     crit_chance += (*iter)->GetModifier()->m_amount;
                                     break;
@@ -8931,7 +8933,7 @@ bool Unit::IsSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                             Unit::AuraList const& aura = GetAurasByType(SPELL_AURA_DUMMY);
                             for(Unit::AuraList::const_iterator itr = aura.begin(); itr != aura.end(); ++itr)
                             {
-                                if ((*itr)->GetSpellProto()->SpellIconID == 2859 && (*itr)->GetEffIndex() == 1)
+                                if ((*itr)->GetSpellProto()->GetSpellIconID() == 2859 && (*itr)->GetEffIndex() == 1)
                                 {
                                     crit_chance += (*itr)->GetModifier()->m_amount;
                                     break;
@@ -9550,7 +9552,7 @@ void Unit::MeleeDamageBonusDone(DamageInfo* damageInfo, uint32 stack)
                 case 7277:
                 {
                     // Merciless Combat
-                    if ((*i)->GetSpellProto()->SpellIconID == 2656)
+                    if ((*i)->GetSpellProto()->GetSpellIconID() == 2656)
                     {
                         if (pVictim->HasAuraState(AURA_STATE_HEALTHLESS_35_PERCENT))
                             DonePercent *= (100.0f+(*i)->GetModifier()->m_amount)/100.0f;
@@ -10622,7 +10624,7 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced, float ratio, bool ignore
         for(AuraList::const_iterator itr = speed_increase_auras.begin(); itr != speed_increase_auras.end(); ++itr)
         {
             const SpellEntry* aura_proto = (*itr)->GetSpellProto();
-            if (aura_proto->GetSpellFamilyName() == SPELLFAMILY_DRUID && aura_proto->SpellIconID == 959)
+            if (aura_proto->GetSpellFamilyName() == SPELLFAMILY_DRUID && aura_proto->GetSpellIconID() == 959)
             {
                 main_speed_mod -= (*itr)->GetModifier()->m_amount;
                 break;
@@ -11439,7 +11441,7 @@ int32 Unit::CalculateSpellDamage(Unit const* target, SpellEntry const* spellProt
         }
     }
 
-    if (!gtScalingEntry && spellProto->Attributes & SPELL_ATTR_LEVEL_DAMAGE_CALCULATION && spellLevel &&
+    if (!gtScalingEntry && spellProto->HasAttribute(SPELL_ATTR_LEVEL_DAMAGE_CALCULATION) && spellLevel &&
             spellEffect->Effect != SPELL_EFFECT_WEAPON_PERCENT_DAMAGE &&
             spellEffect->Effect != SPELL_EFFECT_KNOCK_BACK &&
             (spellEffect->Effect != SPELL_EFFECT_APPLY_AURA || spellEffect->EffectApplyAuraName != SPELL_AURA_MOD_DECREASE_SPEED))
@@ -11503,7 +11505,7 @@ int32 Unit::CalculateAuraDuration(SpellEntry const* spellProto, uint32 effectMas
         {
             case SPELLFAMILY_DRUID:
                 // Thorns
-                if (spellProto->SpellIconID == 53 && spellProto->GetSpellFamilyFlags().test<CF_DRUID_THORNS>())
+                if (spellProto->GetSpellIconID() == 53 && spellProto->GetSpellFamilyFlags().test<CF_DRUID_THORNS>())
                 {
                     // Glyph of Thorns
                     if (Aura *aur = GetAura(57862, EFFECT_INDEX_0))
@@ -11512,14 +11514,14 @@ int32 Unit::CalculateAuraDuration(SpellEntry const* spellProto, uint32 effectMas
                 break;
             case SPELLFAMILY_PALADIN:
                 // Blessing of Might
-                if (spellProto->SpellIconID == 298 && spellProto->GetSpellFamilyFlags().test<CF_PALADIN_BLESSING_OF_MIGHT>())
+                if (spellProto->GetSpellIconID() == 298 && spellProto->GetSpellFamilyFlags().test<CF_PALADIN_BLESSING_OF_MIGHT>())
                 {
                     // Glyph of Blessing of Might
                     if (Aura *aur = GetAura(57958, EFFECT_INDEX_0))
                         duration += aur->GetModifier()->m_amount * MINUTE * IN_MILLISECONDS;
                 }
                 // Blessing of Wisdom
-                else if (spellProto->SpellIconID == 306 && spellProto->GetSpellFamilyFlags().test<CF_PALADIN_BLESSING_OF_WISDOM>())
+                else if (spellProto->GetSpellIconID() == 306 && spellProto->GetSpellFamilyFlags().test<CF_PALADIN_BLESSING_OF_WISDOM>())
                 {
                     // Glyph of Blessing of Wisdom
                     if (Aura *aur = GetAura(57979, EFFECT_INDEX_0))
@@ -14981,7 +14983,7 @@ void DamageInfo::Reset(uint32 _damage)
 SpellSchoolMask DamageInfo::SchoolMask() const
 {
     return GetSpellProto() ?
-        SpellSchoolMask(GetSpellProto()->SchoolMask) :
+        SpellSchoolMask(GetSpellProto()->GetSchoolMask()) :
         attacker && attacker->GetMeleeDamageSchoolMask() ? attacker->GetMeleeDamageSchoolMask() : SPELL_SCHOOL_MASK_NORMAL;
 }
 

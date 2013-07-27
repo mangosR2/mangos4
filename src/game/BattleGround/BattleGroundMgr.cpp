@@ -1066,7 +1066,7 @@ BattleGroundMgr::~BattleGroundMgr()
 void BattleGroundMgr::DeleteAllBattleGrounds()
 {
     // will also delete template bgs:
-    for (uint8 i = BATTLEGROUND_TYPE_NONE; i < MAX_BATTLEGROUND_TYPE_ID; ++i)
+    for (uint32 i = BATTLEGROUND_TYPE_NONE; i < MAX_BATTLEGROUND_TYPE_ID; ++i)
     {
         for (BattleGroundSet::iterator itr = m_BattleGrounds[i].begin(); itr != m_BattleGrounds[i].end();)
         {
@@ -1612,7 +1612,7 @@ BattleGround* BattleGroundMgr::GetBattleGround(uint32 InstanceID, BattleGroundTy
     BattleGroundSet::iterator itr;
     if (bgTypeId == BATTLEGROUND_TYPE_NONE)
     {
-        for (uint8 i = BATTLEGROUND_AV; i < MAX_BATTLEGROUND_TYPE_ID; ++i)
+        for (uint32 i = BATTLEGROUND_AV; i < MAX_BATTLEGROUND_TYPE_ID; ++i)
         {
             itr = m_BattleGrounds[i].find(InstanceID);
             if (itr != m_BattleGrounds[i].end())

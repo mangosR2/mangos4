@@ -779,7 +779,7 @@ struct ExpansionInfoStrunct
     uint8 expansion;
 };
 
-ExpansionInfoStrunct classExpansionInfo[MAX_CLASSES] =
+ExpansionInfoStrunct classExpansionInfo[MAX_CLASSES - 1] =
 {
     { 1, 0 },
     { 2, 0 },
@@ -817,16 +817,16 @@ void WorldSession::SendAuthResponse(uint8 code, bool queued, uint32 queuePos)
 {
     WorldPacket packet(SMSG_AUTH_RESPONSE, 1 /*bits*/ + 4 + 1 + 4 + 1 + 4 + 1 + 1 + (queued ? 4 : 0));
     packet.WriteBit(1);                                     // has account info
-    packet.WriteBits(11, 25);                               // Activation count for classes
+    packet.WriteBits(MAX_CLASSES - 1, 25);                  // Activation count for classes
     packet.WriteBit(0);
     packet.WriteBit(0);
     packet.WriteBits(0, 22);                                // Activate character template windows/button
-    packet.WriteBits(15, 25);                               // Activation count for races
+    packet.WriteBits(MAX_PLAYABLE_RACES, 25);               // Activation count for races
 
     packet.WriteBit(queued);                                // IsInQueue
 
     // account info
-    for (int i = 0; i < 15; ++i)
+    for (int i = 0; i < MAX_PLAYABLE_RACES; ++i)
     {
         packet << uint8(raceExpansionInfo[i].expansion);
         packet << uint8(raceExpansionInfo[i].raceOrClass);
@@ -838,7 +838,7 @@ void WorldSession::SendAuthResponse(uint8 code, bool queued, uint32 queuePos)
     packet << uint8(Expansion());                           // Unknown, these two show the same
     packet << uint8(Expansion());                           // Unknown, these two show the same
 
-    for (int i = 0; i < 11; ++i)
+    for (int i = 0; i < MAX_CLASSES - 1; ++i)
     {
         packet << uint8(classExpansionInfo[i].raceOrClass);
         packet << uint8(classExpansionInfo[i].expansion);

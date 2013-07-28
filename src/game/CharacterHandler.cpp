@@ -569,10 +569,11 @@ void WorldSession::HandlePlayerLoginOpcode(WorldPacket& recv_data)
 {
     ObjectGuid playerGuid;
 
-    recv_data.ReadGuidMask<5, 7, 0, 1, 2, 3, 4, 6>(playerGuid);
+    recv_data.ReadGuidMask<1, 5, 0, 2, 7, 6, 3, 4>(playerGuid);
     recv_data.ReadGuidBytes<6, 4, 3, 5, 0, 2, 7, 1>(playerGuid);
+    float unk = recv_data.ReadSingle();
 
-    DEBUG_LOG("WORLD: Received opcode Player Logon Message from %s", playerGuid.GetString().c_str());
+    DEBUG_LOG("WORLD: Received opcode Player Logon Message from %s, unk float: %f", playerGuid.GetString().c_str(), unk);
 
     if (PlayerLoading() || GetPlayer() != NULL)
     {

@@ -755,20 +755,20 @@ void WorldSession::SendAuthWaitQue(uint32 position)
 {
     if(position == 0)
     {
-        WorldPacket packet( SMSG_AUTH_RESPONSE, 2 );
-        packet.WriteBit(false);
-        packet.WriteBit(false);
+        WorldPacket packet(SMSG_AUTH_RESPONSE, 2);
+        packet.WriteBit(false);     // no account data
+        packet.WriteBit(false);     // not queued
         packet << uint8( AUTH_OK );
         SendPacket(&packet);
     }
     else
     {
         WorldPacket packet( SMSG_AUTH_RESPONSE, 1+4+1 );
+        packet.WriteBit(false);     // has account data
         packet.WriteBit(true);      // has queue
         packet.WriteBit(false);     // unk queue-related
-        packet.WriteBit(false);     // has account info
-        packet << uint8(AUTH_WAIT_QUEUE);
         packet << uint32(position);
+        packet << uint8(AUTH_WAIT_QUEUE);
         SendPacket(&packet);
     }
 }
@@ -816,7 +816,7 @@ ExpansionInfoStrunct raceExpansionInfo[MAX_PLAYABLE_RACES] =
 void WorldSession::SendAuthResponse(uint8 code, bool queued, uint32 queuePos)
 {
     WorldPacket packet(SMSG_AUTH_RESPONSE, 1 /*bits*/ + 4 + 1 + 4 + 1 + 4 + 1 + 1 + (queued ? 4 : 0));
-    packet.WriteBit(1);                                     // has account info
+    packet.WriteBit(1);                                     // has account data
     packet.WriteBits(MAX_CLASSES - 1, 25);                  // Activation count for classes
     packet.WriteBit(0);
     packet.WriteBit(0);
@@ -824,6 +824,11 @@ void WorldSession::SendAuthResponse(uint8 code, bool queued, uint32 queuePos)
     packet.WriteBits(MAX_PLAYABLE_RACES, 25);               // Activation count for races
 
     packet.WriteBit(queued);                                // IsInQueue
+    if (queued)
+    {
+        packet.WriteBit(false);                             // unk
+        packet << uint32(queuePos);
+    }
 
     // account info
     for (int i = 0; i < MAX_PLAYABLE_RACES; ++i)
@@ -832,9 +837,9 @@ void WorldSession::SendAuthResponse(uint8 code, bool queued, uint32 queuePos)
         packet << uint8(raceExpansionInfo[i].raceOrClass);
     }
 
-    packet << uint32(0);
-    packet << uint32(0);
-    packet << uint8(0);
+    packet << uint32(0);                                    // billing time remaining
+    packet << uint32(0);                                    // unk
+    packet << uint8(0);                                     // unk
     packet << uint8(Expansion());                           // Unknown, these two show the same
     packet << uint8(Expansion());                           // Unknown, these two show the same
 

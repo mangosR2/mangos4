@@ -941,8 +941,8 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     if(!IsAcceptableClientBuild(clientBuild))
     {
         packet.Initialize (SMSG_AUTH_RESPONSE, 2);
-        packet.WriteBit(false);
-        packet.WriteBit(false);
+        packet.WriteBit(false);         // no account data
+        packet.WriteBit(false);         // no queue
         packet << uint8 (AUTH_VERSION_MISMATCH);
 
         SendPacket (packet);
@@ -975,8 +975,8 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     if (!result)
     {
         packet.Initialize (SMSG_AUTH_RESPONSE, 2);
-        packet.WriteBit(false);
-        packet.WriteBit(false);
+        packet.WriteBit(false);         // no account data
+        packet.WriteBit(false);         // no queue
         packet << uint8 (AUTH_UNKNOWN_ACCOUNT);
 
         SendPacket (packet);
@@ -1012,8 +1012,8 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
         if (strcmp (fields[2].GetString (), GetRemoteAddress ().c_str ()))
         {
             packet.Initialize (SMSG_AUTH_RESPONSE, 2);
-            packet.WriteBit(false);
-            packet.WriteBit(false);
+            packet.WriteBit(false);         // no account data
+            packet.WriteBit(false);         // no queue
             packet << uint8 (AUTH_FAILED);
             SendPacket (packet);
 
@@ -1067,8 +1067,8 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     if (banresult) // if account banned
     {
         packet.Initialize (SMSG_AUTH_RESPONSE, 2);
-        packet.WriteBit(false);
-        packet.WriteBit(false);
+        packet.WriteBit(false);         // no account data
+        packet.WriteBit(false);         // no queue
         packet << uint8 (AUTH_BANNED);
         SendPacket (packet);
 
@@ -1110,8 +1110,8 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     //if (memcmp (sha.GetDigest (), digest, 20))
     //{
     //    packet.Initialize (SMSG_AUTH_RESPONSE, 2);
-    //    packet.WriteBit(false);
-    //    packet.WriteBit(false);
+    //    packet.WriteBit(false);           // no account data
+    //    packet.WriteBit(false);           // no queue
     //    packet << uint8 (AUTH_FAILED);
 
     //    SendPacket (packet);

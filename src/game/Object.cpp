@@ -434,7 +434,7 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint16 updateFlags) const
         data->WriteBits(unkCounter2, 24);
         data->WriteBit(!hasElevation);
         data->WriteBit(!field8);
-        data->WriteBit(true);//data->WriteBit(false);
+        data->WriteBit(false); //data->WriteBit(true);
         data->WriteGuidMask<0, 6, 7>(Guid);
         data->WriteBit(hasTransport);
         data->WriteBit(!hasOrientation);

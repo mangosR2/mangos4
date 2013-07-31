@@ -3478,7 +3478,7 @@ enum Expansions
     EXPANSION_MOP                       = 4,                // Mists of Pandaria
 };
 
-#define MAX_EXPANSION 5
+#define MAX_EXPANSION 4
 
 // Maxlevel for expansion
 enum MaxLevel
@@ -3487,12 +3487,13 @@ enum MaxLevel
     MAX_LEVEL_TBC                       = 70,
     MAX_LEVEL_WOTLK                     = 80,
     MAX_LEVEL_CATACLYSM                 = 85,
+    MAX_LEVEL_MOP                       = 90,
 };
 
-static const MaxLevel maxLevelForExpansion[MAX_EXPANSION + 1] = { MAX_LEVEL_CLASSIC, MAX_LEVEL_TBC, MAX_LEVEL_WOTLK, MAX_LEVEL_CATACLYSM };
+static const MaxLevel maxLevelForExpansion[MAX_EXPANSION + 1] = { MAX_LEVEL_CLASSIC, MAX_LEVEL_TBC, MAX_LEVEL_WOTLK, MAX_LEVEL_CATACLYSM, MAX_LEVEL_MOP };
 
 // This spell is used for general boarding serverside
-#define SPELL_RIDE_VEHICLE_HARDCODED    46598
+#define SPELL_RIDE_VEHICLE_HARDCODED 46598
 
 enum ConditionSource                                        // From where was the condition called?
 {

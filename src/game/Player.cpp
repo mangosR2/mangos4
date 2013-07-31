@@ -15560,11 +15560,9 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder *holder)
 
     SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);
     SetUInt32Value(PLAYER_FIELD_HOME_PLAYER_REALM, 1);
-    {
-        SetFloatValue(PLAYER_FIELD_UI_SPELL_HIT_MODIFIER, 1);
-        SetFloatValue(PLAYER_FIELD_HOME_REALM_TIME_OFFSET, 1);
-        SetUInt32Value(PLAYER_FIELD_TAXI_MOUNT_ANIM_KIT_ID, 19);
-    }
+    SetFloatValue(PLAYER_FIELD_UI_SPELL_HIT_MODIFIER, 1);
+    SetFloatValue(PLAYER_FIELD_HOME_REALM_TIME_OFFSET, 1);
+    //SetUInt32Value(PLAYER_FIELD_TAXI_MOUNT_ANIM_KIT_ID, 19);
 
     // just load criteria/achievement data, safe call before any load, and need, because some spell/item/quest loading
     // can triggering achievement criteria update that will be lost if this call will later

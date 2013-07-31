@@ -654,34 +654,29 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     data << pCurrChar->GetPositionX();
     data << pCurrChar->GetPositionY();
     data << pCurrChar->GetPositionZ();
-    data << pCurrChar->GetOrientation();
+    data << NormalizeOrientation(pCurrChar->GetOrientation());
     SendPacket(&data);
 
     // load player specific part before send times
     LoadAccountData(holder->GetResult(PLAYER_LOGIN_QUERY_LOADACCOUNTDATA), PER_CHARACTER_CACHE_MASK);
     SendAccountDataTimes(PER_CHARACTER_CACHE_MASK);
 
-    bool featureBit4 = true;
-    data.Initialize(SMSG_FEATURE_SYSTEM_STATUS, 7);         // checked in 4.2.2
-    data << uint8(2);                                       // unknown value
-    data << uint32(1);
+    data.Initialize(SMSG_FEATURE_SYSTEM_STATUS, 34);        // added in 2.2.0
+    data << uint32(1);                                      // Scrolls of Ressurection?
     data << uint32(1);
     data << uint32(2);
     data << uint32(0);
-    data.WriteBit(1);
-    data.WriteBit(1);
-    data.WriteBit(0);
-    data.WriteBit(featureBit4);
-    data.WriteBit(0);
-    data.WriteBit(0);
-    data.FlushBits();
-    if (featureBit4)
-    {
-        data << uint32(1);
-        data << uint32(0);
-        data << uint32(10);
-        data << uint32(60);
-    }
+    data << uint8(2);                                       // complain system status
+    data.WriteBit(false);
+    data.WriteBit(false);                                   // session time alert
+    data.WriteBit(true);
+    data.WriteBit(false);                                   // enable(1)/disable(0) voice chat interface in client ?
+    data.WriteBit(true);                                    // quick ticket?
+    data << uint32(60);
+    data << uint32(10);
+    data << uint32(1);
+    data << uint32(2);
+    data << uint32(0);
     SendPacket(&data);
 
     // Send MOTD

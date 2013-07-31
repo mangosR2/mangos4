@@ -734,6 +734,10 @@ bool Player::Create(uint32 guidlow, const std::string& name, uint8 race, uint8 c
     SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
     SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);               // fix cast time showed in spell tooltip on client
     SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);            // default for players in 3.0.3
+    SetUInt32Value(PLAYER_FIELD_HOME_PLAYER_REALM, 1);
+    SetFloatValue(PLAYER_FIELD_UI_SPELL_HIT_MODIFIER, 1.0f);
+    SetFloatValue(PLAYER_FIELD_HOME_REALM_TIME_OFFSET, 1);
+    //SetUInt32Value(PLAYER_FIELD_TAXI_MOUNT_ANIM_KIT_ID, 19);
 
     SetInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, -1);  // -1 is default value
 
@@ -15555,6 +15559,12 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder *holder)
     InitDisplayIds();                                       // model, scale and model data
 
     SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);
+    SetUInt32Value(PLAYER_FIELD_HOME_PLAYER_REALM, 1);
+    {
+        SetFloatValue(PLAYER_FIELD_UI_SPELL_HIT_MODIFIER, 1);
+        SetFloatValue(PLAYER_FIELD_HOME_REALM_TIME_OFFSET, 1);
+        SetUInt32Value(PLAYER_FIELD_TAXI_MOUNT_ANIM_KIT_ID, 19);
+    }
 
     // just load criteria/achievement data, safe call before any load, and need, because some spell/item/quest loading
     // can triggering achievement criteria update that will be lost if this call will later
@@ -20698,8 +20708,10 @@ void Player::SendInitialPacketsBeforeAddToMap()
 
     data.Initialize(SMSG_LOGIN_SETTIMESPEED, 4 + 4 + 4);
     data.AppendPackedTime(sWorld.GetGameTime());
+    data.AppendPackedTime(sWorld.GetGameTime());
     data << (float)0.01666667f;                             // game speed
     data << uint32(0);                                      // added in 3.1.2
+    data << uint32(0);                                      // added in 5.x
     GetSession()->SendPacket(&data);
 
     // SMSG_TALENTS_INFO x 2 for pet (unspent points and talents in separate packets...)

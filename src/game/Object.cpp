@@ -322,11 +322,17 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint16 updateFlags) const
         hasTransportTime2 = false,
         hasTransportTime3 = false;
 
+    uint32 moveFlags = 0;
+    uint32 moveFlags2 = 0;
+
     if (isType(TYPEMASK_UNIT))
     {
         Unit const* unit = (Unit const*)this;
         hasTransport = !unit->m_movementInfo.GetTransportGuid().IsEmpty();
         isSplineEnabled = unit->IsSplineEnabled();
+
+        moveFlags = unit->m_movementInfo.GetMovementFlags();
+        moveFlags2 = unit->m_movementInfo.GetMovementFlags2();
 
         if (GetTypeId() == TYPEID_PLAYER)
         {
@@ -375,6 +381,20 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint16 updateFlags) const
     uint32 unkCounter2 = 0;
     bool field8 = false;
 
+    // for testing purpose
+    {
+        hasElevation = false;
+        hasPitch = false;
+        hasTransport = false;
+        hasFallData = false;
+        moveFlags = 0;
+        moveFlags2 = 0;
+        //updateFlags &= ~(UPDATEFLAG_HAS_ATTACKING_TARGET | UPDATEFLAG_HAS_POSITION);
+        isSplineEnabled = false;
+        field8 = true;
+        hasTimeStamp = false;
+    }
+
     data->WriteBit(bit654);
     data->WriteBit(false);      // unk
     data->WriteBit(updateFlags & UPDATEFLAG_ROTATION);
@@ -409,12 +429,12 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint16 updateFlags) const
         data->WriteGuidMask<2>(Guid);
         data->WriteBit(false);
         data->WriteBit(!hasPitch);
-        data->WriteBit(!unit->m_movementInfo.GetMovementFlags2());
+        data->WriteBit(!moveFlags2);
         data->WriteGuidMask<4, 5>(Guid);
         data->WriteBits(unkCounter2, 24);
         data->WriteBit(!hasElevation);
         data->WriteBit(!field8);
-        data->WriteBit(false);
+        data->WriteBit(true);//data->WriteBit(false);
         data->WriteGuidMask<0, 6, 7>(Guid);
         data->WriteBit(hasTransport);
         data->WriteBit(!hasOrientation);
@@ -429,17 +449,17 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint16 updateFlags) const
             data->WriteBit(hasTransportTime3);
         }
 
-        if (uint32 flags2 = unit->m_movementInfo.GetMovementFlags2())
-            data->WriteBits(flags2, 13);
+        if (moveFlags2)
+            data->WriteBits(moveFlags2, 13);
 
-        data->WriteBit(!unit->m_movementInfo.GetMovementFlags());
+        data->WriteBit(!moveFlags);
         data->WriteGuidMask<1>(Guid);
         if (hasFallData)
             data->WriteBit(hasFallDirection);
 
         data->WriteBit(isSplineEnabled);
-        if (uint32 flags = unit->m_movementInfo.GetMovementFlags())
-            data->WriteBits(flags, 30);
+        if (moveFlags)
+            data->WriteBits(moveFlags, 30);
 
         if (isSplineEnabled)
             Movement::PacketBuilder::WriteCreateBits(*unit->movespline, *data);
@@ -594,7 +614,8 @@ void Object::BuildMovementUpdate(ByteBuffer * data, uint16 updateFlags) const
 
         data->WriteGuidBytes<5>(Guid);
         if (field8)
-            *data << uint32(0);
+            //*data << uint32(0);
+            *data << uint32(325498105);
 
         *data << float(unit->GetSpeed(MOVE_PITCH_RATE));
         data->WriteGuidBytes<2>(Guid);
@@ -811,11 +832,11 @@ void Object::BuildValuesUpdate(uint8 updatetype, ByteBuffer * data, UpdateMask *
                         *data << m_uint32Values[index];
                 }
                 // FIXME: Some values at server stored in float format but must be sent to client in uint32 format
-                else if (index >= UNIT_FIELD_BASEATTACKTIME && index <= UNIT_FIELD_RANGEDATTACKTIME)
-                {
-                    // convert from float to uint32 and send
-                    *data << uint32(m_floatValues[index] < 0 ? 0 : m_floatValues[index]);
-                }
+                //else if (index >= UNIT_FIELD_BASEATTACKTIME && index <= UNIT_FIELD_RANGEDATTACKTIME)
+                //{
+                //    // convert from float to uint32 and send
+                //    *data << uint32(m_floatValues[index] < 0 ? 0 : m_floatValues[index]);
+                //}
 
                 // there are some float values which may be negative or can't get negative due to other checks
                 else if ((index >= UNIT_FIELD_NEGSTAT0 && index <= UNIT_FIELD_NEGSTAT4) ||
@@ -2378,8 +2399,9 @@ struct WorldObjectChangeAccumulator
     {
         // send self fields changes in another way, otherwise
         // with new camera system when player's camera too far from player, camera wouldn't receive packets and changes from player
-        if (i_object.isType(TYPEMASK_PLAYER))
-            i_object.BuildUpdateDataForPlayer((Player*)&i_object, i_updateDatas);
+        // FIXME testing...
+        //if (i_object.isType(TYPEMASK_PLAYER))
+        //    i_object.BuildUpdateDataForPlayer((Player*)&i_object, i_updateDatas);
     }
 
     void Visit(CameraMapType &m)

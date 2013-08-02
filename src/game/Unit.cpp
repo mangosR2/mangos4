@@ -5306,7 +5306,7 @@ bool Unit::AddSpellAuraHolder(SpellAuraHolderPtr holder)
                                 break;
 
                         // Remove auras when first holder is applied
-                        if ((1 << i) & holder->GetAuraFlags())
+                        if ((1 << i) & holder->GetEffectMask())
                         {
                             removed = true;                 // each caster can only control one vehicle
 
@@ -5336,7 +5336,7 @@ bool Unit::AddSpellAuraHolder(SpellAuraHolderPtr holder)
             switch (trackedType)
             {
                 case TRACK_AURA_TYPE_CONTROL_VEHICLE:       // Only track the controlled vehicle, no secondary effects
-                    if (!IsSpellHaveAura(aurSpellInfo, SPELL_AURA_CONTROL_VEHICLE, holder->GetAuraFlags()))
+                    if (!IsSpellHaveAura(aurSpellInfo, SPELL_AURA_CONTROL_VEHICLE, holder->GetEffectMask()))
                         break;
                     // no break here, track other controlled
                 case TRACK_AURA_TYPE_SINGLE_TARGET:         // Register spell holder single target

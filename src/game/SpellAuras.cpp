@@ -10723,10 +10723,9 @@ bool Aura::HasMechanic(uint32 mechanic) const
     return m_spellEffect->EffectMechanic == mechanic;
 }
 
-
-SpellAuraHolder::SpellAuraHolder(SpellEntry const* spellproto, Unit *target, WorldObject *caster, Item *castItem) :
+SpellAuraHolder::SpellAuraHolder(SpellEntry const* spellproto, Unit* target, WorldObject* caster, Item* castItem) :
 m_spellProto(spellproto), m_target(target), m_castItemGuid(castItem ? castItem->GetObjectGuid() : ObjectGuid()),
-m_auraSlot(MAX_AURAS), m_auraFlags(AFLAG_NONE), m_auraLevel(1), m_procCharges(0),
+m_auraSlot(MAX_AURAS), m_auraFlags(AFLAG_NONE), m_effectMask(0), m_auraLevel(1), m_procCharges(0),
 m_stackAmount(1), m_timeCla(1000), m_removeMode(AURA_REMOVE_BY_DEFAULT), m_AuraDRGroup(DIMINISHING_NONE),
 m_permanent(false), m_isRemovedOnShapeLost(true), m_deleted(false)
 {
@@ -10918,6 +10917,8 @@ void SpellAuraHolder::_AddSpellAuraHolder()
     {
         if (Aura* aura = GetAuraByEffectIndex(SpellEffectIndex(i)))
         {
+            m_effectMask |= (1 << i);
+
             if (aura->GetModifier()->m_amount)
             {
                 switch (aura->GetModifier()->m_auraname)
@@ -10935,6 +10936,7 @@ void SpellAuraHolder::_AddSpellAuraHolder()
     }
 
     SetAuraFlags(flags);
+    SetEffectMask(m_effectMask);
 
     SetAuraLevel(caster ? caster->getLevel() : sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL));
 
@@ -11061,6 +11063,7 @@ void SpellAuraHolder::_RemoveSpellAuraHolder()
         m_target->ApplyDiminishingAura(getDiminishGroup(), false);
 
     SetAuraFlags(AFLAG_NONE);
+    SetEffectMask(0);
     SetAuraLevel(0);
     SetVisibleAura(true);
 
@@ -11390,7 +11393,9 @@ void SpellAuraHolder::BuildUpdatePacket(WorldPacket& data) const
     data << uint32(GetId());
 
     uint8 auraFlags = GetAuraFlags();
+    uint32 effectMask = GetEffectMask();
     data << uint16(auraFlags);
+    data << uint32(effectMask);
     data << uint8(GetAuraLevel());
 
     uint32 stackCount = m_procCharges ? m_procCharges*m_stackAmount : m_stackAmount;
@@ -11409,12 +11414,11 @@ void SpellAuraHolder::BuildUpdatePacket(WorldPacket& data) const
 
     if (auraFlags & AFLAG_EFFECT_AMOUNT_SEND)
     {
+        data << uint8(MAX_EFFECT_INDEX);  // effect count
         for (uint8 i = 0; i < MAX_EFFECT_INDEX; ++i)
-            if (auraFlags & (1 << i))
+            if (effectMask & (1 << i))
                 if (Aura const* aura = GetAura(SpellEffectIndex(i)))
-                    data << int32(aura->GetModifier()->m_amount);
-                else
-                    data << int32(0);
+                    data << float(aura->GetModifier()->m_amount);
     }
 }
 
@@ -12793,7 +12797,7 @@ void SpellAuraHolder::UnregisterAndCleanupTrackedAuras()
     else if (trackedType == TRACK_AURA_TYPE_CONTROL_VEHICLE)
     {
         Unit* caster = GetCaster();
-        if (caster && IsSpellHaveAura(GetSpellProto(), SPELL_AURA_CONTROL_VEHICLE, GetAuraFlags()))
+        if (caster && IsSpellHaveAura(GetSpellProto(), SPELL_AURA_CONTROL_VEHICLE, GetEffectMask()))
         {
             caster->GetTrackedAuraTargets(trackedType).erase(GetSpellProto());
             caster->RemoveAurasDueToSpell(GetSpellProto()->Id);

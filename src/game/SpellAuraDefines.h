@@ -22,15 +22,12 @@
 
 enum AuraFlags
 {
-    AFLAG_NONE              = 0x00,
-    AFLAG_EFF_INDEX_0       = 0x01,
-    AFLAG_EFF_INDEX_1       = 0x02,
-    AFLAG_EFF_INDEX_2       = 0x04,
-    AFLAG_NOT_CASTER        = 0x08,
-    AFLAG_POSITIVE          = 0x10,
-    AFLAG_DURATION          = 0x20,
-    AFLAG_EFFECT_AMOUNT_SEND    = 0x40,
-    AFLAG_NEGATIVE          = 0x80
+    AFLAG_NONE                  = 0x00,
+    AFLAG_NOT_CASTER            = 0x01,
+    AFLAG_POSITIVE              = 0x02,
+    AFLAG_DURATION              = 0x04,
+    AFLAG_EFFECT_AMOUNT_SEND    = 0x08,
+    AFLAG_NEGATIVE              = 0x10
 };
 
 enum AuraType

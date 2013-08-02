@@ -2399,9 +2399,8 @@ struct WorldObjectChangeAccumulator
     {
         // send self fields changes in another way, otherwise
         // with new camera system when player's camera too far from player, camera wouldn't receive packets and changes from player
-        // FIXME testing...
-        //if (i_object.isType(TYPEMASK_PLAYER))
-        //    i_object.BuildUpdateDataForPlayer((Player*)&i_object, i_updateDatas);
+        if (i_object.isType(TYPEMASK_PLAYER))
+            i_object.BuildUpdateDataForPlayer((Player*)&i_object, i_updateDatas);
     }
 
     void Visit(CameraMapType &m)

@@ -622,7 +622,7 @@ void ChatLog::BattleGroundMsg(Player* player, std::string& msg, uint32 type)
 
     log_str.append("[");
     log_str.append(player->GetName());
-
+/*
     switch (type)
     {
         case CHAT_MSG_BATTLEGROUND:
@@ -637,7 +637,7 @@ void ChatLog::BattleGroundMsg(Player* player, std::string& msg, uint32 type)
             log_str.append("]->BG_UNKNOWN:");
             break;
     }
-
+*/
     Group* group = player->GetGroup();
     if (!group)
     {

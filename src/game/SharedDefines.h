@@ -733,7 +733,7 @@ enum Language
     LANG_PANDAREN_NEUTRAL = 42,
     LANG_PANDAREN_TUSHUI = 43,
     LANG_PANDAREN_HUOJIN = 44,
-    LANG_RIKKITUN       = 45,
+    LANG_RIKKITUN       = 168,
     LANG_ADDON          = 0xFFFFFFFF                        // used by addons, in 2.4.0 not exit, replaced by messagetype?
 };
 
@@ -2872,7 +2872,7 @@ enum ChatMsg
     CHAT_MSG_OFFICER                = 0x05,
     CHAT_MSG_YELL                   = 0x06,
     CHAT_MSG_WHISPER                = 0x07,
-    CHAT_MSG_WHISPER_FOREIGN        = 0x08,
+    //CHAT_MSG_WHISPER_FOREIGN        = 0x08,
     CHAT_MSG_WHISPER_INFORM         = 0x09,
     CHAT_MSG_EMOTE                  = 0x0A,
     CHAT_MSG_TEXT_EMOTE             = 0x0B,
@@ -2908,21 +2908,30 @@ enum ChatMsg
     CHAT_MSG_RAID_BOSS_EMOTE        = 0x29,
     CHAT_MSG_RAID_BOSS_WHISPER      = 0x2A,
     CHAT_MSG_FILTERED               = 0x2B,
-    CHAT_MSG_BATTLEGROUND           = 0x2C,
-    CHAT_MSG_BATTLEGROUND_LEADER    = 0x2D,
-    CHAT_MSG_RESTRICTED             = 0x2E,
-    CHAT_MSG_BATTLENET              = 0x2F,
-    CHAT_MSG_ACHIEVEMENT            = 0x30,
-    CHAT_MSG_GUILD_ACHIEVEMENT      = 0x31,
-    CHAT_MSG_ARENA_POINTS           = 0x32,
-    CHAT_MSG_PARTY_LEADER           = 0x33,
-    CHAT_MSG_UNK52                  = 0x34,     // 4.0.1
-    CHAT_MSG_BN_WISPER              = 0x35,     // 4.0.1
-    CHAT_MSG_BN_WISPER_INFORM       = 0x36,     // 4.0.1
-    CHAT_MSG_BN_CONVERSATION        = 0x37      // 4.0.1
+    CHAT_MSG_RESTRICTED             = 0x2C,
+    CHAT_MSG_BATTLENET              = 0x2D,
+    CHAT_MSG_ACHIEVEMENT            = 0x2E,
+    CHAT_MSG_GUILD_ACHIEVEMENT      = 0x2F,
+    CHAT_MSG_PARTY_LEADER           = 0x31,
+    CHAT_MSG_TARGETICONS            = 0x32,
+    CHAT_MSG_BN_WISPER              = 0x33,     // 4.0.1
+    CHAT_MSG_BN_WISPER_INFORM       = 0x34,     // 4.0.1
+    CHAT_MSG_BN_CONVERSATION        = 0x35,     // 4.0.1
+    CHAT_MSG_BN_CONVERSATION_NOTICE = 0x36,     // 4.0.1
+    CHAT_MSG_BN_CONVERSATION_LIST   = 0x37,     // 4.0.1
+    CHAT_MSG_BN_FRIEND              = 0x38,     // 4.0.1
+    CHAT_MSG_BN_UNK_57              = 0x39,     // 4.0.1
+    CHAT_MSG_BN_UNK_58              = 0x3A,     // 4.0.1
+    CHAT_MSG_BN_UNK_59              = 0x3B,     // 4.0.1
+    CHAT_MSG_BN_UNK_60              = 0x3C,     // 4.0.1
+    CHAT_MSG_GUILD_XP               = 0x3D,     // 4.0.1
+    CHAT_MSG_CURRENCY               = 0x3E,     // 4.0.1
+    CHAT_MSG_QUEST_BOSS_EMOTE       = 0x3F,     // 5.x
+    CHAT_MSG_PET_BATTLE_COMBAT_LOG  = 0x40,     // 5.x
+    CHAT_MSG_PET_BATTLE_INFO        = 0x41,     // 5.x
+    CHAT_MSG_INSTANCE_CHAT          = 0x42,     // 5.x
+    CHAT_MSG_INSTANCE_CHAT_LEADER   = 0x43,     // 5.x
 };
-
-#define MAX_CHAT_MSG_TYPE 0x38
 
 enum ChatLinkColors
 {

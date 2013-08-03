@@ -265,9 +265,10 @@ class MANGOS_DLL_SPEC WorldSession
         /// Handle the authentication waiting queue (to be completed)
         void SendAuthWaitQue(uint32 position);
 
-        void SendNameQueryOpcode(Player* p);
-        void SendNameQueryOpcodeFromDB(ObjectGuid guid);
-        static void SendNameQueryOpcodeFromDBCallBack(QueryResult* result, uint32 accountId);
+        void SendNameQueryOpcode(Player* p, uint32 realmId);
+        void SendNameQueryOpcodeFromDB(ObjectGuid guid, uint32 realmId);
+        void HandleRealmQueryOpcode(WorldPacket& recv_data);
+        static void SendNameQueryOpcodeFromDBCallBack(QueryResult* result, uint32 accountId, uint32 realmId);
         void SendAuthResponse(uint8 code, bool queued, uint32 queuePos = 0);
 
         void SendTrainerList(ObjectGuid guid);

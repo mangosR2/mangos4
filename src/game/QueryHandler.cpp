@@ -207,6 +207,7 @@ void WorldSession::HandleCreatureQueryOpcode( WorldPacket & recv_data )
             data << uint8(0);            // name2, name3, name4, always empty
 
         data << subName;
+        data << "";                                         // unk 5.x
         data << ci->IconName;                               // "Directions" for guard, string for Icons 2.3.0
         data << uint32(ci->type_flags);                     // flags
         data << uint32(0);                                  // unk

@@ -120,11 +120,11 @@ void InitializeOpcodes()
     //OPCODE(CMSG_SERVERTIME,                              STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_NULL                     );
     //OPCODE(SMSG_SERVERTIME,                              STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     //OPCODE(CMSG_PLAYER_LOGOUT,                           STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandlePlayerLogoutOpcode        );
-    //OPCODE(CMSG_LOGOUT_REQUEST,                          STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLogoutRequestOpcode       );
-    //OPCODE(SMSG_LOGOUT_RESPONSE,                         STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
-    //OPCODE(SMSG_LOGOUT_COMPLETE,                         STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
-    //OPCODE(CMSG_LOGOUT_CANCEL,                           STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLogoutCancelOpcode        );
-    //OPCODE(SMSG_LOGOUT_CANCEL_ACK,                       STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
+    OPCODE(CMSG_LOGOUT_REQUEST,                          STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLogoutRequestOpcode       );
+    OPCODE(SMSG_LOGOUT_RESPONSE,                         STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
+    OPCODE(SMSG_LOGOUT_COMPLETE,                         STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
+    OPCODE(CMSG_LOGOUT_CANCEL,                           STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleLogoutCancelOpcode        );
+    OPCODE(SMSG_LOGOUT_CANCEL_ACK,                       STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     OPCODE(CMSG_NAME_QUERY,                              STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleNameQueryOpcode           );
     OPCODE(SMSG_NAME_QUERY_RESPONSE,                     STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     OPCODE(CMSG_REALM_QUERY,                             STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleRealmQueryOpcode          );
@@ -139,8 +139,8 @@ void InitializeOpcodes()
     //OPCODE(SMSG_QUEST_QUERY_RESPONSE,                    STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     //OPCODE(CMSG_GAMEOBJECT_QUERY,                        STATUS_LOGGEDIN, PROCESS_INPLACE,      &WorldSession::HandleGameObjectQueryOpcode     );
     //OPCODE(SMSG_GAMEOBJECT_QUERY_RESPONSE,               STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
-    //OPCODE(CMSG_CREATURE_QUERY,                          STATUS_LOGGEDIN, PROCESS_INPLACE,      &WorldSession::HandleCreatureQueryOpcode       );
-    //OPCODE(SMSG_CREATURE_QUERY_RESPONSE,                 STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
+    OPCODE(CMSG_CREATURE_QUERY,                          STATUS_LOGGEDIN, PROCESS_INPLACE,      &WorldSession::HandleCreatureQueryOpcode       );
+    OPCODE(SMSG_CREATURE_QUERY_RESPONSE,                 STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     //OPCODE(CMSG_WHO,                                     STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleWhoOpcode                 );
     //OPCODE(SMSG_WHO,                                     STATUS_NEVER,    PROCESS_INPLACE,      &WorldSession::Handle_ServerSide               );
     //OPCODE(CMSG_WHOIS,                                   STATUS_LOGGEDIN, PROCESS_THREADUNSAFE, &WorldSession::HandleWhoisOpcode               );

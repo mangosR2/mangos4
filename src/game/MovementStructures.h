@@ -36,6 +36,7 @@ enum MovementStatusElements
     MSEUnknownBit,
     MSEUnknownBit2,
     MSEUnknownCount,
+    MSEHasUnkInt32,
     MSEHasMovementFlags,
     MSEHasMovementFlags2,
     MSEHasTimestamp,
@@ -92,6 +93,7 @@ enum MovementStatusElements
     MSETransportTime3,
     MSEMovementCounter,
     MSEUnknownArray,
+    MSEUnkInt32,
     MSEEnd,
     MSE_COUNT
 };

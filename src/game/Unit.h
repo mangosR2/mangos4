@@ -755,7 +755,7 @@ class MovementInfo
 
     public:
         MovementInfo() : moveFlags(MOVEFLAG_NONE), moveFlags2(MOVEFLAG2_NONE), time(0),
-            t_time(0), t_seat(-1), t_seatInfo(NULL), t_time2(0), s_pitch(0.0f), fallTime(0), splineElevation(0.0f) {}
+            t_time(0), t_seat(-1), t_seatInfo(NULL), t_time2(0), s_pitch(0.0f), fallTime(0), splineElevation(0.0f), unkInt32(0) {}
 
         // Read/Write methods
         void Read(ByteBuffer& data, uint16 opcode);
@@ -825,7 +825,7 @@ class MovementInfo
             StatusInfo() : hasFallData(false), hasFallDirection(false), hasOrientation(false),
                 hasPitch(false), hasSpline(false), hasSplineElevation(false),
                 hasTimeStamp(false), hasTransportTime2(false), hasTransportTime3(false),
-                unkBit2(false) { }
+                unkBit2(false), hasUnkInt32(false) { }
 
             bool hasFallData        : 1;
             bool hasFallDirection   : 1;
@@ -837,6 +837,7 @@ class MovementInfo
             bool hasTransportTime2  : 1;
             bool hasTransportTime3  : 1;
             bool unkBit2            : 1;
+            bool hasUnkInt32        : 1;
         };
 
         JumpInfo const& GetJumpInfo() const { return jump; }
@@ -894,6 +895,8 @@ class MovementInfo
         float    splineElevation;
         // unknown array
         std::list<uint32> unkArray;
+        // unknown int32
+        int32 unkInt32;
         // status info
         StatusInfo si;
 };

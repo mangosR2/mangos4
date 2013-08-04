@@ -128,7 +128,7 @@ void MovementInfo::Read(ByteBuffer& data, uint16 opcode)
                 break;
             case MSEFlags2:
                 if (hasMovementFlags2)
-                    moveFlags2 = data.ReadBits(12);
+                    moveFlags2 = data.ReadBits(13);
                 break;
             case MSEUnknownBit:
                 data.ReadBit();
@@ -335,7 +335,7 @@ void MovementInfo::Write(ByteBuffer& data, uint16 opcode) const
                 break;
             case MSEFlags2:
                 if (moveFlags2)
-                    data.WriteBits(moveFlags2, 12);
+                    data.WriteBits(moveFlags2, 13);
                 break;
             case MSETimestamp:
                 if (si.hasTimeStamp)

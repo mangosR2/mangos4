@@ -822,9 +822,11 @@ class MovementInfo
         // used only for SMSG_PLAYER_MOVE currently
         struct StatusInfo
         {
-            StatusInfo() : hasFallData(false), hasFallDirection(false), hasOrientation(false), 
-                hasPitch(false), hasSpline(false), hasSplineElevation(false), 
-                hasTimeStamp(false), hasTransportTime2(false), hasTransportTime3(false) { }
+            StatusInfo() : hasFallData(false), hasFallDirection(false), hasOrientation(false),
+                hasPitch(false), hasSpline(false), hasSplineElevation(false),
+                hasTimeStamp(false), hasTransportTime2(false), hasTransportTime3(false),
+                unkBit2(false) { }
+
             bool hasFallData        : 1;
             bool hasFallDirection   : 1;
             bool hasOrientation     : 1;
@@ -834,6 +836,7 @@ class MovementInfo
             bool hasTimeStamp       : 1;
             bool hasTransportTime2  : 1;
             bool hasTransportTime3  : 1;
+            bool unkBit2            : 1;
         };
 
         JumpInfo const& GetJumpInfo() const { return jump; }
@@ -889,6 +892,8 @@ class MovementInfo
         JumpInfo jump;
         // spline
         float    splineElevation;
+        // unknown array
+        std::list<uint32> unkArray;
         // status info
         StatusInfo si;
 };

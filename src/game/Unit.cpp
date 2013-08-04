@@ -130,8 +130,11 @@ void MovementInfo::Read(ByteBuffer& data, uint16 opcode)
                 if (hasMovementFlags2)
                     moveFlags2 = data.ReadBits(12);
                 break;
-            case MSEHasUnknownBit:
+            case MSEUnknownBit:
                 data.ReadBit();
+                break;
+            case MSEUnknownBit2:
+                si.unkBit2 = data.ReadBit();
                 break;
             case MSETimestamp:
                 if (si.hasTimeStamp)
@@ -252,6 +255,12 @@ void MovementInfo::Read(ByteBuffer& data, uint16 opcode)
             case MSEMovementCounter:
                 data.read_skip<uint32>();
                 break;
+            case MSEUnknownCount:
+                unkArray.resize(data.ReadBits(24));
+                break;
+            case MSEUnknownArray:
+                for (std::list<uint32>::iterator itr = unkArray.begin(); itr != unkArray.end(); ++itr)
+                    data >> *itr;
             default:
                 MANGOS_ASSERT(false && "Wrong movement status element");
                 break;
@@ -330,8 +339,11 @@ void MovementInfo::Write(ByteBuffer& data, uint16 opcode) const
             case MSEHasTimestamp:
                 data.WriteBit(!si.hasTimeStamp);
                 break;
-            case MSEHasUnknownBit:
+            case MSEUnknownBit:
                 data.WriteBit(false);
+                break;
+            case MSEUnknownBit2:
+                data.WriteBit(si.unkBit2);
                 break;
             case MSEHasFallData:
                 data.WriteBit(si.hasFallData);
@@ -435,6 +447,13 @@ void MovementInfo::Write(ByteBuffer& data, uint16 opcode) const
                 break;
             case MSEMovementCounter:
                 data << uint32(0);
+                break;
+            case MSEUnknownCount:
+                data.WriteBits(unkArray.size(), 24);
+                break;
+            case MSEUnknownArray:
+                for (std::list<uint32>::const_iterator itr = unkArray.begin(); itr != unkArray.end(); ++itr)
+                    data << uint32(*itr);
                 break;
             default:
                 MANGOS_ASSERT(false && "Wrong movement status element");

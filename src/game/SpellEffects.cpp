@@ -243,6 +243,25 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectUnused,                                   //180 SPELL_EFFECT_180                      unused in 4.3.4
     &Spell::EffectUnused,                                   //181 SPELL_EFFECT_181                      unused in 4.3.4
     &Spell::EffectNULL,                                     //182 SPELL_EFFECT_182                      3 spells 4.3.4
+    &Spell::EffectUnused,                                   //183 SPELL_EFFECT_183                      0 spells 5.1.0
+    &Spell::EffectNULL,                                     //184 SPELL_EFFECT_184                      1 spells 5.1.0
+    &Spell::EffectNULL,                                     //185 SPELL_EFFECT_185                      3 spells 5.1.0
+    &Spell::EffectNULL,                                     //186 SPELL_EFFECT_186                      6 spells 5.1.0
+    &Spell::EffectNULL,                                     //187 SPELL_EFFECT_187                      1 spells 5.1.0
+    &Spell::EffectNULL,                                     //188 SPELL_EFFECT_188                      1 spells 5.1.0
+    &Spell::EffectUnused,                                   //189 SPELL_EFFECT_189                      0 spells 5.1.0
+    &Spell::EffectNULL,                                     //190 SPELL_EFFECT_190                      1 spells 5.1.0
+    &Spell::EffectNULL,                                     //191 SPELL_EFFECT_191                      1 spells 5.1.0
+    &Spell::EffectNULL,                                     //192 SPELL_EFFECT_192                      1 spells 5.1.0
+    &Spell::EffectUnused,                                   //193 SPELL_EFFECT_193                      0 spells 5.1.0
+    &Spell::EffectUnused,                                   //194 SPELL_EFFECT_194                      0 spells 5.1.0
+    &Spell::EffectNULL,                                     //195 SPELL_EFFECT_195                      4 spells 5.1.0
+    &Spell::EffectNULL,                                     //196 SPELL_EFFECT_196                      11 spells 5.1.0
+    &Spell::EffectNULL,                                     //197 SPELL_EFFECT_197                      5 spells 5.1.0
+    &Spell::EffectNULL,                                     //198 SPELL_EFFECT_198                      34 spells 5.1.0
+    &Spell::EffectNULL,                                     //199 SPELL_EFFECT_199                      1 spells 5.1.0
+    &Spell::EffectNULL,                                     //200 SPELL_EFFECT_200                      2 spells 5.1.0
+    &Spell::EffectNULL,                                     //201 SPELL_EFFECT_201                      3 spells 5.1.0
 };
 
 void Spell::EffectEmpty(SpellEffectEntry const* effect)

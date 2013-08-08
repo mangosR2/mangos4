@@ -1565,9 +1565,20 @@ enum Targets
     TARGET_125                              = 125,
     TARGET_126                              = 126,
     TARGET_127                              = 127,
+    TARGET_128                              = 128,
+    TARGET_129                              = 129,
+    TARGET_130                              = 130,
+    TARGET_131                              = 131,
+    TARGET_132                              = 132,
+    TARGET_133                              = 133,
+    TARGET_134                              = 134,
+    TARGET_135                              = 135,
+    TARGET_136                              = 136,
+    TARGET_137                              = 137,
+
+    MAX_SPELL_TARGET,
 };
 
-#define MAX_SPELL_TARGET               128
 
 enum SpellMissInfo
 {

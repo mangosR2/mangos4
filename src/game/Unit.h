@@ -678,7 +678,7 @@ MovementFlags const movementOrTurningFlagsMask = MovementFlags(
     movementFlagsMask | MOVEFLAG_TURN_LEFT | MOVEFLAG_TURN_RIGHT
 );
 
-// 12 bits in client
+// 13 bits in client
 enum MovementFlags2
 {
     MOVEFLAG2_NONE              = 0x0000,
@@ -694,6 +694,7 @@ enum MovementFlags2
     MOVEFLAG2_INTERP_MOVEMENT   = 0x0200,
     MOVEFLAG2_INTERP_TURNING    = 0x0400,
     MOVEFLAG2_INTERP_PITCHING   = 0x0800,
+    MOVEFLAG2_UNK_13            = 0x1000,
     MOVEFLAG2_INTERP_MASK       = MOVEFLAG2_INTERP_MOVEMENT | MOVEFLAG2_INTERP_TURNING | MOVEFLAG2_INTERP_PITCHING
 };
 

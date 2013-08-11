@@ -598,7 +598,8 @@ class Spell
         // These vars are used in both delayed spell system and modified immediate spell system
         bool m_referencedFromCurrentSpell;                  // mark as references to prevent deleted and access by dead pointers
         bool m_executedCurrently;                           // mark as executed to prevent deleted and access by dead pointers
-        uint8 m_applyMultiplierMask;                        // by effect: damage multiplier needed?
+        bool m_needSpellLog;                                // need to send spell log?
+        uint32 m_applyMultiplierMask;                       // by effect: damage multiplier needed?
         float m_damageMultipliers[MAX_EFFECT_INDEX];        // by effect: damage multiplier
 
         // Current targets, to be used in SpellEffects (MUST BE USED ONLY IN SPELL EFFECTS)
@@ -625,7 +626,7 @@ class Spell
         // Spell trigger system
         //******************************************
         bool   m_canTrigger;                                // Can start trigger (m_IsTriggeredSpell can`t use for this)
-        uint8  m_negativeEffectMask;                        // Use for avoid sent negative spell procs for additional positive effects only targets
+        uint32 m_negativeEffectMask;                        // Use for avoid sent negative spell procs for additional positive effects only targets
         uint32 m_procAttacker;                              // Attacker trigger flags
         uint32 m_procVictim;                                // Victim   trigger flags
         void   prepareDataForTriggerSystem();
@@ -640,25 +641,25 @@ class Spell
             uint64 timeDelay;
             uint32 HitInfo;
             uint32 damage;
-            SpellMissInfo missCondition:8;
-            SpellMissInfo reflectResult:8;
-            uint8  effectMask:8;
-            bool   processed:1;
+            uint32 effectMask;
+            SpellMissInfo missCondition: 8;
+            SpellMissInfo reflectResult: 8;
+            bool   processed: 1;
         };
-        uint8 m_needAliveTargetMask;                        // Mask req. alive targets
+        uint32 m_needAliveTargetMask;                       // Mask req. alive targets
 
         struct GOTargetInfo
         {
             ObjectGuid targetGUID;
             uint64 timeDelay;
-            uint8  effectMask:8;
-            bool   processed:1;
+            uint32 effectMask;
+            bool   processed: 1;
         };
 
         struct ItemTargetInfo
         {
-            Item  *item;
-            uint8 effectMask;
+            Item*  item;
+            uint32 effectMask;
         };
 
         typedef std::list<TargetInfo>     TargetList;

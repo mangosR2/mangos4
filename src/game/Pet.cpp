@@ -1284,7 +1284,10 @@ void Pet::_LoadAuras(uint32 timediff)
     if (getPetType() == HUNTER_PET || m_duration == 0)
         RemoveAllAuras();
 
-    QueryResult *result = CharacterDatabase.PQuery("SELECT caster_guid,item_guid,spell,stackcount,remaincharges,basepoints0,basepoints1,basepoints2,periodictime0,periodictime1,periodictime2,maxduration,remaintime,effIndexMask FROM pet_aura WHERE guid = '%u'", m_charmInfo->GetPetNumber());
+    QueryResult* result = CharacterDatabase.PQuery("SELECT caster_guid,item_guid,spell,stackcount,remaincharges,"
+        "basepoints0,basepoints1,basepoints2,basepoints3,basepoints4,basepoints5,basepoints6,basepoints7,basepoints8,basepoints9,basepoints10,basepoints11,basepoints12,basepoints13,basepoints14,basepoints15,basepoints16,basepoints17,basepoints18,basepoints19,basepoints20,"
+        "periodictime0,periodictime1,periodictime2,periodictime3,periodictime4,periodictime5,periodictime6,periodictime7,periodictime8,periodictime9,periodictime10,periodictime11,periodictime12,periodictime13,periodictime14,periodictime15,periodictime16,periodictime17,periodictime18,periodictime19,periodictime20,"
+        "maxduration,remaintime,effIndexMask FROM pet_aura WHERE guid = '%u'", m_charmInfo->GetPetNumber());
 
     if (result)
     {
@@ -1302,13 +1305,13 @@ void Pet::_LoadAuras(uint32 timediff)
 
             for (int32 i = 0; i < MAX_EFFECT_INDEX; ++i)
             {
-                damage[i] = fields[i+5].GetInt32();
-                periodicTime[i] = fields[i+8].GetUInt32();
+                damage[i] = fields[i + 5].GetInt32();
+                periodicTime[i] = fields[i + 26].GetUInt32();
             }
 
-            int32 maxduration = fields[11].GetInt32();
-            int32 remaintime = fields[12].GetInt32();
-            uint32 effIndexMask = fields[13].GetUInt32();
+            int32 maxduration = fields[47].GetInt32();
+            int32 remaintime = fields[48].GetInt32();
+            uint32 effIndexMask = fields[49].GetUInt32();
 
             SpellEntry const* spellproto = sSpellStore.LookupEntry(spellid);
             if (!spellproto)
@@ -1392,8 +1395,13 @@ void Pet::_SaveAuras()
         return;
 
     stmt = CharacterDatabase.CreateStatement(insAuras, "INSERT INTO pet_aura (guid, caster_guid, item_guid, spell, stackcount, remaincharges, "
-        "basepoints0, basepoints1, basepoints2, periodictime0, periodictime1, periodictime2, maxduration, remaintime, effIndexMask) "
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            "basepoints0, basepoints1, basepoints2, basepoints3, basepoints4, basepoints5, basepoints6, basepoints7, basepoints8, basepoints9, basepoints10, basepoints11, basepoints12, basepoints13, basepoints14, basepoints15, basepoints16, basepoints17, basepoints18, basepoints19, basepoints20,"
+            "periodictime0, periodictime1, periodictime2, periodictime3, periodictime4, periodictime5, periodictime6, periodictime7, periodictime8, periodictime9, periodictime10, periodictime11, periodictime12, periodictime13, periodictime14, periodictime15, periodictime16, periodictime17, periodictime18, periodictime19, periodictime20,"
+            "maxduration, remaintime, effIndexMask) "
+            "VALUES (?, ?, ?, ?, ?, ?,"
+            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
+            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,"
+            "?, ?, ?)");
 
     for(SpellAuraHolderMap::const_iterator itr = auraHolders.begin(); itr != auraHolders.end(); ++itr)
     {

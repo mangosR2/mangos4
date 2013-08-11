@@ -522,8 +522,10 @@ void Spell::FillTargetMap()
     // TODO: ADD the correct target FILLS!!!!!!
 
     UnitList tmpUnitLists[MAX_EFFECT_INDEX];                // Stores the temporary Target Lists for each effect
-    uint8 effToIndex[MAX_EFFECT_INDEX] = {0, 1, 2};         // Helper array, to link to another tmpUnitList, if the targets for both effects match
-    for(int i = 0; i < MAX_EFFECT_INDEX; ++i)
+    uint8 effToIndex[MAX_EFFECT_INDEX] = { 0, 1, 2, 3, 4, 5, 6,
+                                           7, 8, 9, 10, 11, 12, 13,
+                                           14, 15, 16, 17, 18, 19, 20 };    // Helper array, to link to another tmpUnitList, if the targets for both effects match
+    for (int i = 0; i < MAX_EFFECT_INDEX; ++i)
     {
         SpellEffectEntry const* spellEffect = m_spellInfo->GetSpellEffect(SpellEffectIndex(i));
         if(!spellEffect)
@@ -1788,7 +1790,7 @@ bool Spell::IsAliveUnitPresentInTargetList()
     if (m_needAliveTargetMask == 0)
         return true;
 
-    uint8 needAliveTargetMask = m_needAliveTargetMask;
+    uint32 needAliveTargetMask = m_needAliveTargetMask;
 
     for(TargetList::const_iterator ihit = m_UniqueTargetInfo.begin(); ihit != m_UniqueTargetInfo.end(); ++ihit)
     {
@@ -5381,7 +5383,7 @@ void Spell::HandleThreatSpells()
         threat += threatEntry->ap_bonus * m_caster->GetTotalAttackPowerValue(GetWeaponAttackType(m_spellInfo));
 
     bool positive = true;
-    uint8 effectMask = 0;
+    uint32 effectMask = 0;
     for (int i = 0; i < MAX_EFFECT_INDEX; ++i)
         if (SpellEffectEntry const* spellEffect = m_spellInfo->GetSpellEffect(SpellEffectIndex(i)))
             if (spellEffect->Effect)

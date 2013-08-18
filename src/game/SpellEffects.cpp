@@ -12481,7 +12481,7 @@ void Spell::EffectSummonAllTotems(SpellEffectEntry const* effect)
 
                     // not have spell in spellbook or spell passive and not casted by client
                     if (!spellInfo ||
-                       (((Player*)m_caster)->GetUInt16Value(PLAYER_FIELD_BYTES2, 0) == 0 &&
+                       (/*((Player*)m_caster)->GetUInt16Value(PLAYER_FIELD_BYTES2, 0) == 0 &&*/
                         (!((Player*)m_caster)->HasActiveSpell(spell_Id))) ||
                         IsPassiveSpell(spellInfo))
                     {

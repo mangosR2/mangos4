@@ -414,7 +414,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     if (mover->GetTypeId()==TYPEID_PLAYER)
     {
         // not have spell in spellbook or spell passive and not casted by client
-        if (((((Player*)mover)->GetUInt16Value(PLAYER_FIELD_BYTES2, 0) == 0 &&
+        if (((/*((Player*)mover)->GetUInt16Value(PLAYER_FIELD_BYTES2, 0) == 0 &&*/
             (!((Player*)mover)->HasActiveSpell(spellId) && !triggered))
             || IsPassiveSpell(spellInfo)) && spellId != 1843)
         {

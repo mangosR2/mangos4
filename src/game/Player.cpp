@@ -6008,6 +6008,7 @@ void Player::UpdateSkillsForLevel()
                 itr->second.uState = SKILL_CHANGED;
         }
     }
+}
 
 void Player::UpdateSkillsToMaxSkillsForLevel()
 {
@@ -6838,7 +6839,7 @@ void Player::UpdateHonorKills()
     // START custom PvP Honor Kills Title System
     if (sWorld.getConfig(CONFIG_BOOL_ALLOW_HONOR_KILLS_TITLES))
     {
-        uint32 HonorKills = GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS);
+        uint32 HonorKills = GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS);
         uint32 victim_rank = 0;
 
         //this may consume a lot of cpu cycles.
@@ -18413,7 +18414,7 @@ void Player::_SaveStats()
     stmt.addUInt32(IsInWorld() ? 1 : 0);
 //    stmt.addUInt32(GetArenaPoints());
 //    stmt.addUInt32(GetHonorPoints());
-    stmt.addUInt32(GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORBALE_KILLS));
+    stmt.addUInt32(GetUInt32Value(PLAYER_FIELD_LIFETIME_HONORABLE_KILLS));
 
     std::ostringstream ss; // duh
     for (uint32 i = 0; i < EQUIPMENT_SLOT_END * 2; ++i)             // EquipmentCache string
@@ -21051,18 +21052,18 @@ void Player::ResetDailyQuestStatus()
     // FIXME
     return;
 
-    uint32 dailyQuestCount = 0;
-    for (uint32 quest_daily_idx = 0; quest_daily_idx < PLAYER_MAX_DAILY_QUESTS; ++quest_daily_idx)
-    {
-        if (GetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1 + quest_daily_idx))
-            ++dailyQuestCount;
+//    uint32 dailyQuestCount = 0;
+//    for (uint32 quest_daily_idx = 0; quest_daily_idx < PLAYER_MAX_DAILY_QUESTS; ++quest_daily_idx)
+//    {
+//        if (GetUInt32Value(PLAYER_FIELD_DAILY_QUESTS + quest_daily_idx))
+//            ++dailyQuestCount;
 
-         SetUInt32Value(PLAYER_FIELD_DAILY_QUESTS_1 + quest_daily_idx, 0);
-    }
+//         SetUInt32Value(PLAYER_FIELD_DAILY_QUESTS + quest_daily_idx, 0);
+//    }
 
     // Reset daily_quest_daily if there are no daily quest last day
-    if (!dailyQuestCount)
-        GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST_DAILY, ACHIEVEMENT_CRITERIA_CONDITION_DAILY);
+//    if (!dailyQuestCount)
+//        GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_COMPLETE_DAILY_QUEST_DAILY, ACHIEVEMENT_CRITERIA_CONDITION_DAILY);
 
     // DB data deleted in caller
     m_DailyQuestChanged = false;

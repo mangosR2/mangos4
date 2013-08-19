@@ -490,14 +490,14 @@ uint32 SpellEntry::GetActiveIconID() const
     return misc ? misc->activeIconID : 0;
 }
 
-uint32 SpellEntry::GetSchoolMask() const
+SpellSchoolMask SpellEntry::GetSchoolMask() const
 {
     SpellMiscEntry const* misc = GetSpellMisc();
-    return misc ? misc->SchoolMask : 0;
+    return misc ? SpellSchoolMask(misc->SchoolMask) : SPELL_SCHOOL_MASK_NONE;
 }
 
-uint32 SpellEntry::GetPowerType() const
+Powers SpellEntry::GetPowerType() const
 {
     SpellPowerEntry const* power = GetSpellPower();
-    return power ? power->powerType : 0;
+    return power ? Powers(power->powerType) : POWER_MANA;
 }

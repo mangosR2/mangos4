@@ -2481,8 +2481,8 @@ struct SpellEntry
     uint32 GetSpellVisual(int idx = 0) const;
     uint32 GetSpellIconID() const;
     uint32 GetActiveIconID() const;
-    uint32 GetSchoolMask() const;
-    uint32 GetPowerType() const;
+    SpellSchoolMask GetSchoolMask() const;
+    Powers GetPowerType() const;
 
     bool IsFitToFamilyMask(uint64 familyFlags, uint32 familyFlags2 = 0) const
     {

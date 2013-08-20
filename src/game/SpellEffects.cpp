@@ -876,7 +876,7 @@ void Spell::EffectSchoolDMG(SpellEffectEntry const* effect)
             case SPELLFAMILY_WARLOCK:
             {
                 // Incinerate Rank 1 & 2
-                if ((classOptions && classOptions->SpellFamilyFlags & UI64LIT(0x00004000000000)) && m_spellInfo->GetSpellIconID()==2128)
+                if ((classOptions && classOptions->GetSpellFamilyFlags().test<CF_WARLOCK_INCINERATE>()) && m_spellInfo->GetSpellIconID()==2128)
                 {
                     // Incinerate does more dmg (dmg*0.25) if the target have Immolate debuff.
                     // Check aura state for speed but aura state set not only for Immolate spell
@@ -1009,7 +1009,7 @@ void Spell::EffectSchoolDMG(SpellEffectEntry const* effect)
             {
                 SpellEffectEntry const* rakeSpellEffect = m_spellInfo->GetSpellEffect(EFFECT_INDEX_2);
                 // Ferocious Bite
-                if (m_caster->GetTypeId()==TYPEID_PLAYER && (classOptions && classOptions->SpellFamilyFlags & UI64LIT(0x000800000)) && m_spellInfo->GetSpellVisual()==6587)
+                if (m_caster->GetTypeId() == TYPEID_PLAYER && (classOptions && classOptions->GetSpellFamilyFlags().test<CF_DRUID_RIP_BITE>()) && m_spellInfo->GetSpellVisual() == 6587)
                 {
                     // converts up to 30 points of energy into ($f1+$AP/410) additional damage
                     float ap = m_caster->GetTotalAttackPowerValue(BASE_ATTACK);
@@ -1161,7 +1161,7 @@ void Spell::EffectSchoolDMG(SpellEffectEntry const* effect)
                     damage += int32(ap * 0.2f) + int32(holy * 32 / 100);
                 }
                 // Judgement of Vengeance/Corruption ${1+0.22*$SPH+0.14*$AP} + 10% for each application of Holy Vengeance/Blood Corruption on the target
-                else if ((classOptions && classOptions->SpellFamilyFlags & UI64LIT(0x800000000)) && m_spellInfo->GetSpellIconID()==2292)
+                else if ((classOptions && classOptions->GetSpellFamilyFlags().test<CF_PALADIN_JUDGEMENT_OF_CORRUPT_VENG>()) && m_spellInfo->GetSpellIconID()==2292)
                 {
                     uint32 debuf_id;
                     switch(m_spellInfo->Id)
@@ -3971,7 +3971,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
         {
             SpellClassOptionsEntry const* warClassOptions = m_spellInfo->GetSpellClassOptions();
             // Charge
-            if (warClassOptions && (warClassOptions->SpellFamilyFlags & UI64LIT(0x1)) && m_spellInfo->GetSpellVisual() == 867)
+            if (warClassOptions && warClassOptions->GetSpellFamilyFlags().test<CF_WARRIOR_CHARGE>() && m_spellInfo->GetSpellVisual() == 867)
             {
                 int32 chargeBasePoints0 = damage;
                 m_caster->CastCustomSpell(m_caster, 34846, &chargeBasePoints0, NULL, NULL, true);
@@ -4295,7 +4295,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                 Unit::AuraList const& decSpeedList = unitTarget->GetAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
                 for(Unit::AuraList::const_iterator iter = decSpeedList.begin(); iter != decSpeedList.end(); ++iter)
                 {
-                    if ((*iter)->GetSpellProto()->GetSpellIconID()==15 && (*iter)->GetSpellProto()->GetDispel()==0)
+                    if ((*iter)->GetSpellProto()->GetSpellIconID()==15 && (*iter)->GetSpellProto()->GetDispel() == 0)
                     {
                         found = true;
                         break;
@@ -4396,7 +4396,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
         }
         case SPELLFAMILY_PALADIN:
         {
-            switch (m_spellInfo->GetSpellIconID())
+            switch(m_spellInfo->GetSpellIconID())
             {
                 case 156:                                   // Holy Shock
                 {
@@ -4517,7 +4517,7 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
         {
             SpellClassOptionsEntry const* shamClassOptions = m_spellInfo->GetSpellClassOptions();
             // Cleansing Totem
-            if (shamClassOptions && (shamClassOptions->SpellFamilyFlags & UI64LIT(0x0000000004000000)) && m_spellInfo->GetSpellIconID()==1673)
+            if (shamClassOptions && shamClassOptions->GetSpellFamilyFlags().test<CF_SHAMAN_MISC_TOTEM_EFFECTS>() && m_spellInfo->GetSpellIconID()==1673)
             {
                 if (unitTarget)
                     m_caster->CastSpell(unitTarget, 52025, true);
@@ -4649,8 +4649,29 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
         case SPELLFAMILY_DEATHKNIGHT:
         {
             SpellClassOptionsEntry const* dkClassOptions = m_spellInfo->GetSpellClassOptions();
+            // Corpse Explosion
+            if (m_spellInfo->GetSpellIconID() == 1737)
+            {
+                // Living ghoul as a target
+                if (unitTarget->isAlive() && unitTarget->GetObjectGuid().IsPet() && unitTarget->GetEntry() == 26125)
+                {
+                    int32 bp = int32(unitTarget->GetMaxHealth()/4.0f);
+                    unitTarget->CastCustomSpell(unitTarget,47496,&bp,NULL,NULL,true);
+                    unitTarget->CastSpell(unitTarget, 53730, true, NULL, NULL, m_caster->GetObjectGuid());
+                    unitTarget->CastSpell(unitTarget,43999,true);
+                    ((Pet*)unitTarget)->Unsummon(PET_SAVE_AS_DELETED);
+                }
+                else if (!unitTarget->isAlive())
+                {
+                    m_caster->CastSpell(unitTarget, 50444, true, NULL, NULL, m_caster->GetObjectGuid());
+                    m_caster->CastSpell(unitTarget, 53730, true, NULL, NULL, m_caster->GetObjectGuid());
+                    if (unitTarget->GetTypeId() == TYPEID_UNIT && unitTarget->getDeathState() == CORPSE)
+                        ((Creature*)unitTarget)->RemoveCorpse();
+                }
+                return;
+            }
             // Death Coil
-            if (dkClassOptions && dkClassOptions->SpellFamilyFlags & UI64LIT(0x002000))
+            else if (dkClassOptions && dkClassOptions->SpellFamilyFlags & UI64LIT(0x002000))
             {
                 if (m_caster->IsFriendlyTo(unitTarget))
                 {
@@ -7875,7 +7896,8 @@ void Spell::EffectWeaponDmg(SpellEffectEntry const* effect)
         {
             // Blood Strike, Heart Strike, Obliterate
             // Blood-Caked Strike
-            if (m_spellInfo->GetSpellIconID() == 1736)
+            if ((classOptions && classOptions->GetSpellFamilyFlags().test<CF_DEATHKNIGHT_BLOOD_STRIKE, CF_DEATHKNIGHT_OBLITERATE>()) ||
+                m_spellInfo->GetSpellIconID() == 1736)
             {
                 uint32 count = 0;
                 Unit::SpellAuraHolderMap const& auras = unitTarget->GetSpellAuraHolderMap();
@@ -7891,9 +7913,11 @@ void Spell::EffectWeaponDmg(SpellEffectEntry const* effect)
                     // Effect 1(for Blood-Caked Strike)/3(other) damage is bonus
                     float bonus = count * CalculateDamage(m_spellInfo->GetSpellIconID() == 1736 ? EFFECT_INDEX_0 : EFFECT_INDEX_2, unitTarget) / 100.0f;
                     // Blood Strike, Blood-Caked Strike and Obliterate store bonus*2
-                    if ((classOptions && classOptions->SpellFamilyFlags & UI64LIT(0x0002000000400000)) ||
+                    if ((classOptions && classOptions->GetSpellFamilyFlags().test<CF_DEATHKNIGHT_BLOOD_STRIKE, CF_DEATHKNIGHT_OBLITERATE>()) ||
                         m_spellInfo->GetSpellIconID() == 1736)
                         bonus /= 2.0f;
+                    if (Aura const* dummy = m_caster->GetDummyAura(64736)) // Item - Death Knight T8 Melee 4P Bonus
+                        bonus += (dummy->GetModifier()->m_amount * count) / 100.0f;
 
                     totalDamagePercentMod *= 1.0f + bonus;
                 }

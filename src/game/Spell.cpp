@@ -816,7 +816,7 @@ void Spell::prepareDataForTriggerSystem()
         switch (m_spellInfo->GetSpellFamilyName())
         {
             case SPELLFAMILY_MAGE:
-                // Arcane Missles / Blizzard triggers need do it
+                // Arcane Missiles / Blizzard triggers need do it
                 if (m_spellInfo->GetSpellFamilyFlags().test<CF_MAGE_BLIZZARD, CF_MAGE_ARCANE_MISSILES2>() || m_spellInfo->GetSpellIconID() == 212)
                     m_canTrigger = true;
                 // Clearcasting trigger need do it
@@ -7395,7 +7395,7 @@ SpellCastResult Spell::CheckRange(bool strict, WorldObject* checkTarget)
 
     uint32 rangeIndex = m_spellInfo->GetRangeIndex();
     // special range cases
-    switch (rangeIndex)
+    switch(m_spellInfo->GetRangeIndex())
     {
         // self cast doesn't need range checking -- also for Starshards fix
         // spells that can be cast anywhere also need no check

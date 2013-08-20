@@ -4513,7 +4513,7 @@ SpellAuraProcResult Unit::HandleProcTriggerSpellAuraProc(Unit *pVictim, DamageIn
         case 35095:
         {
             SpellPowerEntry const* spellPower = procSpell->GetSpellPower();
-            if(!spellPower || !procSpell || procSpell->GetPowerType()!=POWER_MANA || spellPower->manaCost==0 && spellPower->ManaCostPercentage==0 && spellPower->manaCostPerlevel==0)
+            if (!spellPower || !procSpell || procSpell->GetPowerType() != POWER_MANA || spellPower->manaCost == 0 && spellPower->ManaCostPercentage == 0 && spellPower->manaCostPerlevel == 0)
                 return SPELL_AURA_PROC_FAILED;
             break;
         }
@@ -5475,7 +5475,7 @@ SpellAuraProcResult Unit::HandleDamageShieldAuraProc(Unit* pVictim, DamageInfo* 
     data << uint32(procDamageInfo.GetSpellId());
     data << uint32(procDamageInfo.damage);                  // Damage
     data << uint32(overkill);                   // Overkill
-    data << uint32(procDamageInfo.SchoolMask());
+    data << uint32(procDamageInfo.GetSchoolMask());
     SendMessageToSet(&data, true);
 
     DealDamage(pVictim, &procDamageInfo, true);

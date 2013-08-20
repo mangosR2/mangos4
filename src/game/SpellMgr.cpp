@@ -2340,7 +2340,7 @@ bool SpellMgr::canStackSpellRanksInSpellBook(SpellEntry const *spellInfo) const
                         return false;
                     // Seal of Righteousness, 2 version of same rank
                     SpellClassOptionsEntry const* classOptions = spellInfo->GetSpellClassOptions();
-                    if (classOptions && (classOptions->SpellFamilyFlags & UI64LIT(0x0000000008000000)) && spellInfo->GetSpellIconID() == 25)
+                    if (classOptions && (classOptions->GetSpellFamilyFlags().test<CF_PALADIN_SEAL_OF_JUST_RIGHT>()) && spellInfo->GetSpellIconID() == 25)
                         return false;
                 }
                 break;
@@ -2374,9 +2374,6 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
 
     SpellClassOptionsEntry const* classOptions_1 = spellInfo_1->GetSpellClassOptions();
     SpellClassOptionsEntry const* classOptions_2 = spellInfo_2->GetSpellClassOptions();
-
-    uint32 spellIconID_1 = spellInfo_1->GetSpellIconID();
-    uint32 spellIconID_2 = spellInfo_2->GetSpellIconID();
 
     if (!classOptions_1 || !classOptions_2)
         return false;
@@ -2500,8 +2497,8 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
     }
 
     // more generic checks
-    if (spellIconID_1 == spellIconID_2 &&
-            spellIconID_1 != 0 && spellIconID_2 != 0)
+    if (spellInfo_1->GetSpellIconID() == spellInfo_2->GetSpellIconID() &&
+            spellInfo_1->GetSpellIconID() != 0 && spellInfo_2->GetSpellIconID() != 0)
     {
         bool isModifier = false;
         for (int i = 0; i < MAX_EFFECT_INDEX; ++i)
@@ -2736,7 +2733,7 @@ bool SpellMgr::IsReflectableSpell(SpellEntry const* spellInfo)
 {
     // AoE spells, spells with non-magic DmgClass or SchoolMask or with SPELL_ATTR_EX2_CANT_REFLECTED cannot be reflected
     if (spellInfo->GetDmgClass() == SPELL_DAMAGE_CLASS_MAGIC &&
-        GetSpellSchoolMask(spellInfo) != SPELL_SCHOOL_MASK_NORMAL &&
+        spellInfo->GetSchoolMask() != SPELL_SCHOOL_MASK_NORMAL &&
         !spellInfo->HasAttribute(SPELL_ATTR_EX2_IGNORE_LOS) &&
         !spellInfo->HasAttribute(SPELL_ATTR_EX_CANT_REFLECTED) &&
         !IsAreaOfEffectSpell(spellInfo))
@@ -5380,7 +5377,7 @@ DiminishingGroup GetDiminishingReturnsGroupForSpell(SpellEntry const* spellproto
         case SPELLFAMILY_HUNTER:
         {
             // Freezing Trap & Freezing Arrow & Wyvern Sting
-            if (spellproto->GetSpellIconID() == 180 || spellproto->GetSpellIconID() == 1721)
+            if  (spellproto->GetSpellIconID() == 180 || spellproto->GetSpellIconID() == 1721)
                 return DIMINISHING_DISORIENT;
             // Hunters Mark - limit to 2 minutes in PvP
             else if (spellproto->GetSpellFamilyFlags().test<CF_HUNTER_HUNTERS_MARK>())

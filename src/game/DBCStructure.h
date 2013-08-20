@@ -2474,15 +2474,6 @@ struct SpellEntry
     uint32 GetTargetAuraSpell() const;
     uint32 GetTargets() const;
     uint32 GetEffectApplyAuraNameByIndex(SpellEffectIndex index) const;
-    uint32 GetCastingTimeIndex() const;
-    uint32 GetDurationIndex() const;
-    uint32 GetRangeIndex() const;
-    float GetSpeed() const;
-    uint32 GetSpellVisual(int idx = 0) const;
-    uint32 GetSpellIconID() const;
-    uint32 GetActiveIconID() const;
-    SpellSchoolMask GetSchoolMask() const;
-    Powers GetPowerType() const;
 
     bool IsFitToFamilyMask(uint64 familyFlags, uint32 familyFlags2 = 0) const
     {
@@ -2593,6 +2584,16 @@ struct SpellEntry
     inline bool HasAttribute(SpellAttributesEx8 attribute) const { return GetAttributesEx8() & attribute; }
     inline bool HasAttribute(SpellAttributesEx9 attribute) const { return GetAttributesEx9() & attribute; }
     inline bool HasAttribute(SpellAttributesEx10 attribute) const { return GetAttributesEx10() & attribute; }
+
+    uint32 GetCastingTimeIndex() const;
+    uint32 GetDurationIndex() const;
+    uint32 GetRangeIndex() const;
+    float  GetSpeed() const;
+    uint32 GetSpellVisual(int idx = 0) const;
+    uint32 GetSpellIconID() const;
+    uint32 GetActiveIconID() const;
+    SpellSchoolMask GetSchoolMask() const;
+    Powers GetPowerType() const;
 
     private:
         // prevent creating custom entries (copy data from original in fact)
@@ -2833,14 +2834,26 @@ struct TotemCategoryEntry
 
 struct TransportAnimationEntry
 {
-    //uint32    id;                                         // 0
-    uint32    transportEntry;                               // 1
-    uint32    timeFrame;                                    // 2
-    //float     xOffs;                                      // 3
-    //float     yOffs;                                      // 4
-    //float     zOffs;                                      // 5
-    //uint32    unk;                                        // 6
+    //uint32    id;                                         // 0       m_ID
+    uint32    transportEntry;                               // 1       transport GO entry
+    uint32    timeFrame;                                    // 2       linked time frame
+    float     x;                                            // 3       transport offset X
+    float     y;                                            // 4       transport offset Y
+    float     z;                                            // 5       transport offset Z
+    //uint32    animId;                                     // 6       animation ID
 };
+
+struct TransportRotationEntry
+{
+    //uint32    id;                                         // 0       m_ID
+    uint32    transportEntry;                               // 1       transport GO entry
+    uint32    timeFrame;                                    // 2       linked time frame
+    //float     qx;                                         // 3       rotation quaternion x
+    //float     qy;                                         // 4       rotation quaternion y
+    //float     qz;                                         // 5       rotation quaternion z
+    //float     qw;                                         // 6       rotation quaternion w
+};
+
 
 #define MAX_VEHICLE_SEAT 8
 

@@ -9001,7 +9001,7 @@ void Aura::PeriodicTick()
 
             pCaster->DealDamageMods(&damageInfo);
 
-            pCaster->SendSpellNonMeleeDamageLog(target, GetId(), damageInfo.damage, damageInfo.SchoolMask(), damageInfo.GetAbsorb(), damageInfo.resist, false, 0, isCrit);
+            pCaster->SendSpellNonMeleeDamageLog(target, GetId(), damageInfo.damage, damageInfo.GetSchoolMask(), damageInfo.GetAbsorb(), damageInfo.resist, false, 0, isCrit);
 
             // Set trigger flag
             damageInfo.procAttacker = PROC_FLAG_ON_DO_PERIODIC; //  | PROC_FLAG_SUCCESSFUL_HARMFUL_SPELL_HIT;
@@ -9115,7 +9115,7 @@ void Aura::PeriodicTick()
 
             target->getHostileRefManager().threatAssist(pCaster, float(gain) * 0.5f * sSpellMgr.GetSpellThreatMultiplier(spellProto), spellProto);
 
-            // heal for caster damage (Health funnel only! spellProto->SpellVisual[0] == 163 wrong - some repair spells here!)
+            // heal for caster damage (Health funnel only! spellProto->GetSpellVisual() == 163 wrong - some repair spells here!)
             if (target != pCaster && spellProto->GetSpellFamilyFlags().test<CF_WARLOCK_HEALTH_FUNNEL>())
             {
                 uint32 dmg = spellProto->GetManaPerSecond();
@@ -10760,7 +10760,7 @@ m_permanent(false), m_isRemovedOnShapeLost(true), m_deleted(false)
     m_duration = m_maxDuration = CalculateSpellDuration(spellproto, unitCaster);
 
     if (m_maxDuration == -1 || (m_isPassive && spellproto->GetDurationIndex() == 0))
-        m_permanent = true;
+        SetPermanent(true);
 
     if (unitCaster)
     {
@@ -11953,7 +11953,7 @@ void SpellAuraHolder::HandleSpellSpecificBoosts(bool apply)
                             SpellEntry const* dummyEntry = (*itr)->GetSpellProto();
                             // Body and Soul (talent ranks)
                             if (dummyEntry->GetSpellFamilyName() == SPELLFAMILY_PRIEST && dummyEntry->GetSpellIconID() == 2218 &&
-                                dummyEntry->GetSpellVisual()==0)
+                                dummyEntry->GetSpellVisual() == 0)
                             {
                                 chance = (*itr)->GetSpellProto()->CalculateSimpleValue(EFFECT_INDEX_1);
                                 break;
@@ -12639,7 +12639,7 @@ void SpellAuraHolder::Update(uint32 diff)
             if (Unit* caster = GetCaster())
             {
                 Powers powertype = Powers(GetSpellProto()->GetPowerType());
-                m_timeCla = 1*IN_MILLISECONDS;
+                m_timeCla = 1 * IN_MILLISECONDS;
 
                 if (SpellPowerEntry const* spellPower = GetSpellProto()->GetSpellPower())
                 {

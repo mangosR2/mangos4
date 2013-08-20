@@ -179,8 +179,17 @@ void Creature::RemoveFromWorld(bool remove)
 
 void Creature::RemoveCorpse()
 {
+    // since pool system can fail to roll unspawned object, this one can remain spawned, so must set respawn nevertheless
+    if (uint16 poolid = sPoolMgr.IsPartOfAPool<Creature>(GetGUIDLow()))
+        sPoolMgr.UpdatePool<Creature>(*GetMap()->GetPersistentState(), poolid, GetGUIDLow());
+
+    if (!IsInWorld())                                       // can be despawned by update pool
+        return;
+
     if (((getDeathState() != CORPSE && getDeathState() != GHOULED) && !m_isDeadByDefault) || (getDeathState() != ALIVE && m_isDeadByDefault))
         return;
+
+    DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Removing corpse of %s ", GetGuidStr().c_str());
 
     m_corpseDecayTimer = 0;
     SetDeathState(DEAD);
@@ -275,7 +284,7 @@ bool Creature::InitEntry(uint32 Entry, CreatureData const* data /*=NULL*/, GameE
     SetDisplayId(display_id);
 
     SetByteValue(UNIT_FIELD_BYTES_0, 2, minfo->gender);
-    SetByteValue(UNIT_FIELD_BYTES_0, 3, uint8(cinfo->powerType));
+    SetByteValue(UNIT_FIELD_BYTES_0, 3, uint8(cinfo->GetPowerType()));
 
     // Load creature equipment
     if (eventData && eventData->equipment_id)
@@ -511,26 +520,18 @@ void Creature::Update(uint32 update_diff, uint32 diff)
 
             if (m_corpseDecayTimer <= update_diff)
             {
-                // since pool system can fail to roll unspawned object, this one can remain spawned, so must set respawn nevertheless
-                if (uint16 poolid = sPoolMgr.IsPartOfAPool<Creature>(GetGUIDLow()))
-                    sPoolMgr.UpdatePool<Creature>(*GetMap()->GetPersistentState(), poolid, GetGUIDLow());
-
-                if (IsInWorld())                            // can be despawned by update pool
-                {
-                    RemoveCorpse();
-                    DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Removing corpse... %u ", GetEntry());
-                }
+                RemoveCorpse();
+                break;
             }
             else
-            {
                 m_corpseDecayTimer -= update_diff;
-                if (m_groupLootId)
-                {
-                    if (m_groupLootTimer <= update_diff)
-                        StopGroupLoot();
-                    else
-                        m_groupLootTimer -= update_diff;
-                }
+
+            if (m_groupLootId)                              // Loot is stopped already if corpse got removed.
+            {
+                if (m_groupLootTimer <= update_diff)
+                    StopGroupLoot();
+                else
+                    m_groupLootTimer -= update_diff;
             }
 
             break;
@@ -541,22 +542,11 @@ void Creature::Update(uint32 update_diff, uint32 diff)
             {
                 if (m_corpseDecayTimer <= update_diff)
                 {
-                    // since pool system can fail to roll unspawned object, this one can remain spawned, so must set respawn nevertheless
-                    if (uint16 poolid = sPoolMgr.IsPartOfAPool<Creature>(GetGUIDLow()))
-                        sPoolMgr.UpdatePool<Creature>(*GetMap()->GetPersistentState(), poolid, GetGUIDLow());
-
-                    if (IsInWorld())                        // can be despawned by update pool
-                    {
-                        RemoveCorpse();
-                        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Removing alive corpse... %u ", GetEntry());
-                    }
-                    else
-                        return;
+                    RemoveCorpse();
+                    break;
                 }
                 else
-                {
                     m_corpseDecayTimer -= update_diff;
-                }
             }
 
             Unit::Update(update_diff, diff);
@@ -1161,7 +1151,7 @@ void Creature::SelectLevel(const CreatureInfo* cinfo, float percentHealth, float
 
     SetModifierValue(UNIT_MOD_HEALTH, BASE_VALUE, float(health));
 
-    Powers powerType = Powers(cinfo->powerType);
+    Powers powerType = Powers(cinfo->GetPowerType());
     uint32 maxPower = 0;
 
     switch(powerType)
@@ -1584,6 +1574,8 @@ void Creature::SetDeathState(DeathState s)
 void Creature::Respawn()
 {
     RemoveCorpse();
+    if (!IsInWorld())                                       // Could be removed as part of a pool (in which case respawn-time is handled with pool-system)
+        return;
 
     if (IsDespawned())
     {
@@ -1698,9 +1690,7 @@ SpellEntry const* Creature::ReachWithSpellAttack(Unit* pVictim)
 
         if(spellInfo->GetManaCost() > GetPower(POWER_MANA))
             continue;
-
-        uint32 rangeIndex = spellInfo->GetRangeIndex();
-        SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(rangeIndex);
+        SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(spellInfo->GetRangeIndex());
         float range = GetSpellMaxRange(srange);
         float minrange = GetSpellMinRange(srange);
 
@@ -1757,9 +1747,7 @@ SpellEntry const* Creature::ReachWithSpellCure(Unit* pVictim)
 
         if(spellInfo->GetManaCost() > GetPower(POWER_MANA))
             continue;
-
-        uint32 rangeIndex = spellInfo->GetRangeIndex();
-        SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(rangeIndex);
+        SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(spellInfo->GetRangeIndex());
         float range = GetSpellMaxRange(srange);
         float minrange = GetSpellMinRange(srange);
 

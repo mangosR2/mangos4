@@ -633,9 +633,9 @@ void ObjectMgr::LoadCreatureTemplates()
         if (!displayScaleEntry)
             sLog.outErrorDb("Creature (Entry: %u) has nonexistent modelid in modelid_1/modelid_2/modelid_3/modelid_4", cInfo->Entry);
 
-        if (cInfo->powerType >= MAX_POWERS)
+        if (cInfo->GetPowerType() >= MAX_POWERS)
         {
-            sLog.outErrorDb("Creature (Entry: %u) has invalid power type (%u)", cInfo->Entry, cInfo->powerType);
+            sLog.outErrorDb("Creature (Entry: %u) has invalid power type (%u)", cInfo->Entry, cInfo->GetPowerType());
             const_cast<CreatureInfo*>(cInfo)->powerType = POWER_MANA;
         }
 

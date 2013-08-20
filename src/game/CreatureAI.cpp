@@ -62,8 +62,7 @@ CanCastResult CreatureAI::CanCastSpell(Unit* pTarget, const SpellEntry* pSpell, 
             return CAST_FAIL_SPELL_COOLDOWN;
     }
 
-    uint32 rangeIndex = pSpell->GetRangeIndex();
-    if (const SpellRangeEntry* pSpellRange = sSpellRangeStore.LookupEntry(rangeIndex))
+    if (SpellRangeEntry const* pSpellRange = sSpellRangeStore.LookupEntry(pSpell->GetRangeIndex()))
     {
         if (pTarget != m_creature)
         {

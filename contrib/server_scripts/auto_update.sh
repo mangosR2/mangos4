@@ -425,12 +425,20 @@ num=$(($_num));
         if [[ $num -ge $dblastupdate ]]; then
             _rc=$(db_run $mangoshost $mangosport $mangosuser $mangospass $mangosdb "$j")
             echo "Installed update "$j"  with rc="$_rc
-            newlastupdate=$(db_exec $mangoshost $mangosport $mangosuser $mangospass $mangosdb "UPDATE db_version SET r2_db_version='$num'")
             dblastupdate=$num;
         fi
     fi
 
     if [[ $j =~ mt.*_mangos_.* ]]; then
+        dblastupdate=$(db_exec $mangoshost $mangosport $mangosuser $mangospass $mangosdb "SELECT r2_v3_db_version FROM db_version")
+        if [[ $num -ge $dblastupdate ]]; then
+            _rc=$(db_run $mangoshost $mangosport $mangosuser $mangospass $mangosdb "$j")
+            echo "Installed update "$j"  with rc="$_rc
+            dblastupdate=$num;
+        fi
+    fi
+
+    if [[ $j =~ mq.*_mangos_.* ]]; then
         dblastupdate=$(db_exec $mangoshost $mangosport $mangosuser $mangospass $mangosdb "SELECT r2_v3_db_version FROM db_version")
         if [[ $num -ge $dblastupdate ]]; then
             _rc=$(db_run $mangoshost $mangosport $mangosuser $mangospass $mangosdb "$j")
@@ -445,17 +453,26 @@ num=$(($_num));
         if [[ $num -ge $dblastupdate ]]; then
         _rc=$(db_run $charhost $charport $charuser $charpass $chardb "$j")
             echo "Installed update "$j"  with rc="$_rc
-            newlastupdate=$(db_exec $charhost $charport $charuser $charpass $chardb "UPDATE character_db_version SET r2_db_version='$num'")
             dblastupdate=$num;
         fi
     fi
+
 
     if [[ $j =~ mt.*_characters_.* ]]; then
         dblastupdate=$(db_exec $charhost $charport $charuser $charpass $chardb "SELECT r2_v3_db_version FROM character_db_version")
         if [[ $num -ge $dblastupdate ]]; then
         _rc=$(db_run $charhost $charport $charuser $charpass $chardb "$j")
             echo "Installed update "$j"  with rc="$_rc
-            newlastupdate=$(db_exec $charhost $charport $charuser $charpass $chardb "UPDATE character_db_version SET r2_v3_db_version='$num'")
+            dblastupdate=$num;
+        fi
+    fi
+
+    if [[ $j =~ mq.*_characters_.* ]]; then
+        dblastupdate=$(db_exec $charhost $charport $charuser $charpass $chardb "SELECT r2_db_version FROM character_db_version")
+        if [[ $num -ge $dblastupdate ]]; then
+        _rc=$(db_run $charhost $charport $charuser $charpass $chardb "$j")
+            echo "Installed update "$j"  with rc="$_rc
+            newlastupdate=$(db_exec $charhost $charport $charuser $charpass $chardb "UPDATE character_db_version SET r2_db_version='$num'")
             dblastupdate=$num;
         fi
     fi

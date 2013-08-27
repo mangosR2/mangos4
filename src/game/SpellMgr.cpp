@@ -606,7 +606,8 @@ SpellSpecific GetSpellSpecific(uint32 spellId)
             if (spellInfo->GetCategory() == 47)
                 return SPELL_PRESENCE;
             break;
-
+        case SPELLFAMILY_MONK:
+            break; 
         default:
             break;
     }
@@ -2536,6 +2537,8 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                     return true;
             }
             break;
+        case SPELLFAMILY_MONK:
+            break; 
         default:
             break;
     }

@@ -2242,6 +2242,7 @@ void Unit::CalculateMeleeDamage(DamageInfo* damageInfo)
             switch(getClass())                              // upper for melee classes
             {
                 case CLASS_WARRIOR:
+                case CLASS_MONK:
                 case CLASS_ROGUE:
                     maxLowEnd = 0.91f;                      //If the attacker is a melee class then instead the lower value of 0.91
                     break;
@@ -6289,6 +6290,7 @@ void Unit::HandleArenaPreparation(bool apply)
         SetPower(POWER_RUNIC_POWER, 0);
         SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
         SetPower(POWER_ENERGY, GetMaxPower(POWER_ENERGY));
+        SetPower(POWER_CHI, 0);
 
         // Remove all buffs with duration < 25 sec (actually depends on config value)
         // and auras, which have SPELL_ATTR_EX5_REMOVE_AT_ENTER_ARENA (former SPELL_ATTR_EX5_UNK2 = 0x00000004).
@@ -11777,9 +11779,9 @@ bool Unit::HandleStatModifier(UnitMods unitMod, UnitModifierType modifierType, f
         case UNIT_MOD_RAGE:
         case UNIT_MOD_FOCUS:
         case UNIT_MOD_ENERGY:
+        case UNIT_MOD_CHI:
         case UNIT_MOD_RUNE:
         case UNIT_MOD_RUNIC_POWER:         UpdateMaxPower(GetPowerTypeByAuraGroup(unitMod)); break;
-        case UNIT_MOD_CHI:                 UpdateMaxPower(GetPowerTypeByAuraGroup(unitMod)); break;
 
         case UNIT_MOD_RESISTANCE_HOLY:
         case UNIT_MOD_RESISTANCE_FIRE:

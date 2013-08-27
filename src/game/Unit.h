@@ -1929,7 +1929,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         {
             ShapeshiftForm form = GetShapeshiftForm();
             return form != FORM_NONE && form != FORM_BATTLESTANCE && form != FORM_BERSERKERSTANCE && form != FORM_DEFENSIVESTANCE &&
-                form != FORM_SHADOW && form != FORM_STEALTH;
+                form != FORM_SHADOW && form != FORM_STEALTH && form != FORM_SERPENTSTANCE && form != FORM_OXSTANCE && form != FORM_TIGERSTANCE;
         }
 
         virtual uint32 GetModelForForm(SpellShapeshiftFormEntry const* ssEntry) const;

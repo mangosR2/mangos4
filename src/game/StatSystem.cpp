@@ -514,7 +514,7 @@ const float Player::m_diminishing_k[MAX_CLASSES] =
     0.9880f,  // Shaman
     0.9830f,  // Mage
     0.9830f,  // Warlock
-    0.0f,     // ??
+    0.9880f,  // Monk
     0.9720f   // Druid
 };
 
@@ -531,7 +531,7 @@ void Player::UpdateParryPercentage()
         145.560408f,  // Shaman
           0.0f,       // Mage
           0.0f,       // Warlock
-          0.0f,       // ??
+          0.0f,       // Monk
           0.0f        // Druid
     };
 
@@ -560,16 +560,16 @@ void Player::UpdateDodgePercentage()
 {
     const float dodge_cap[MAX_CLASSES] =
     {
-        65.631440f,     // Warrior
-        65.631440f,     // Paladin
+        65.631440f,   // Warrior
+        65.631440f,   // Paladin
         145.560408f,  // Hunter
         145.560408f,  // Rogue
         150.375940f,  // Priest
-        65.631440f,     // DK
+        65.631440f,   // DK
         145.560408f,  // Shaman
         150.375940f,  // Mage
         150.375940f,  // Warlock
-          0.0f,       // ??
+        145.560408f,  // Monk
         116.890707f   // Druid
     };
 

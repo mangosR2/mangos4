@@ -4356,6 +4356,15 @@ void Aura::HandleAuraModShapeshift(bool apply, bool Real)
             case FORM_SHADOW_DANCE:
                 PowerType = POWER_ENERGY;
                 break;
+            case FORM_SERPENTSTANCE:
+                PowerType = POWER_MANA;
+                break;
+            case FORM_OXSTANCE:
+                PowerType = POWER_ENERGY;
+                break;
+            case FORM_TIGERSTANCE:
+                PowerType = POWER_ENERGY;
+                break;
             case FORM_BEAR:
             case FORM_BATTLESTANCE:
             case FORM_BERSERKERSTANCE:
@@ -4407,6 +4416,9 @@ void Aura::HandleAuraModShapeshift(bool apply, bool Real)
                     }
                     break;
                 }
+                case FORM_SERPENTSTANCE:
+                case FORM_OXSTANCE:
+                case FORM_TIGERSTANCE: 
                 case FORM_BATTLESTANCE:
                 case FORM_DEFENSIVESTANCE:
                 case FORM_BERSERKERSTANCE:
@@ -8152,6 +8164,15 @@ void Aura::HandleShapeshiftBoosts(bool apply)
             HotWSpellId = 24899;
             MasterShaperSpellId = 48418;
             break;
+        case FORM_SERPENTSTANCE:
+            spellId1 = 115070;
+            break;
+        case FORM_OXSTANCE:
+            spellId1 = 115069;
+            break;
+        case FORM_TIGERSTANCE:
+            spellId1 = 103985;
+            break; 
         case FORM_BATTLESTANCE:
             spellId1 = 21156;
             break;

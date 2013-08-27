@@ -7517,6 +7517,7 @@ int32 Spell::CalculatePowerCost(SpellEntry const* spellInfo, Unit* caster, Spell
             case POWER_RAGE:
             case POWER_FOCUS:
             case POWER_ENERGY:
+            case POWER_CHI:
                 powerCost += manaCostPct * caster->GetMaxPower(Powers(powerType)) / 100;
                 break;
             case POWER_RUNE:

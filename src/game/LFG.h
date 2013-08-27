@@ -118,6 +118,7 @@ enum LFGType
     LFG_TYPE_ZONE                 = 4,
     LFG_TYPE_HEROIC_DUNGEON       = 5,
     LFG_TYPE_RANDOM_DUNGEON       = 6,
+    LFG_TYPE_SCENARIO             = 7,
     LFG_TYPE_MAX
 };
 

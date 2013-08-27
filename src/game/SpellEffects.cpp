@@ -3648,6 +3648,10 @@ void Spell::EffectDummy(SpellEffectEntry const* effect)
                             // random (SPD, AP)
                             spell_id = roll_chance_i(50) ? 67016 : 67017;
                             break;
+                        case CLASS_MONK:
+                            // random (SPD, AP)
+                            spell_id = roll_chance_i(50) ? 67016 : 67017;
+                            break; 
                         case CLASS_PALADIN:
                         case CLASS_DRUID:
                         default:
@@ -10143,6 +10147,11 @@ void Spell::EffectScriptEffect(SpellEffectEntry const* effect)
                             unitTarget->CastSpell(unitTarget, 59815, true);
                             break;
                         }
+                        case POWER_CHI:
+                        {
+                            unitTarget->CastSpell(unitTarget, 59815, true);
+                            break;
+                        } 
                         default:
                             break;
                     }

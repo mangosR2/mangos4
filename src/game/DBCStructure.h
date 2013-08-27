@@ -280,7 +280,7 @@ struct AchievementCriteriaEntry
         struct
         {
             uint32  skillID;                                // 3
-            uint32  skillLevel;                             // 4 apprentice=1, journeyman=2, expert=3, artisan=4, master=5, grand master=6
+            uint32  skillLevel;                             // 4 apprentice=1, journeyman=2, expert=3, artisan=4, master=5, grand master=6, illustrious=7, zen master=8
         } learn_skill_level;
 
         // ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM               = 41
@@ -1403,9 +1403,10 @@ struct MapEntry
     // Helpers
     uint32 Expansion() const { return addon; }
 
-    bool IsDungeon() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID; }
-    bool IsNonRaidDungeon() const { return map_type == MAP_INSTANCE; }
-    bool Instanceable() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID || map_type == MAP_BATTLEGROUND || map_type == MAP_ARENA; }
+    bool IsDungeon() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID || map_type == MAP_SCENARIO; }
+    bool IsNonRaidDungeon() const { return map_type == MAP_INSTANCE || map_type == MAP_SCENARIO; }
+    bool Instanceable() const { return map_type == MAP_INSTANCE || map_type == MAP_RAID || map_type == MAP_BATTLEGROUND || map_type == MAP_ARENA; || map_type == MAP_SCENARIO; }
+    bool IsScenario() const { return map_type == MAP_SCENARIO; } 
     bool IsRaid() const { return map_type == MAP_RAID; }
     bool IsBattleGround() const { return map_type == MAP_BATTLEGROUND; }
     bool IsBattleArena() const { return map_type == MAP_ARENA; }
@@ -1414,16 +1415,21 @@ struct MapEntry
     bool IsMountAllowed() const
     {
         return !IsDungeon() ||
-            MapID==209 || MapID==269 || MapID==309 ||       // TanarisInstance, CavernsOfTime, Zul'gurub
-            MapID==509 || MapID==534 || MapID==560 ||       // AhnQiraj, HyjalPast, HillsbradPast
-            MapID==568 || MapID==580 || MapID==595 ||       // ZulAman, Sunwell Plateau, Culling of Stratholme
-            MapID==603 || MapID==615 || MapID==616 ||       // Ulduar, The Obsidian Sanctum, The Eye Of Eternity
-            MapID==658;                                     // Pit of Saron
+            MapID == 209 || MapID == 269 || MapID == 309 ||     // TanarisInstance, CavernsOfTime, Zul'gurub
+            MapID == 509 || MapID == 534 || MapID == 560 ||     // AhnQiraj, HyjalPast, HillsbradPast
+            MapID == 568 || MapID == 580 || MapID == 595 ||     // ZulAman, Sunwell Plateau, Culling of Stratholme
+            MapID == 603 || MapID == 615 || MapID == 616 ||     // Ulduar, The Obsidian Sanctum, The Eye Of Eternity
+            MapID == 654 || MapID == 655 || MapID == 656 ||     // Gilneas, Gilneas Phase 1, Gilneas Phase 2
+            MapID == 658 || MapID == 720 || MapID == 724 ||     // Pit of Saron, Firelands, Ruby Sanctum
+            MapID == 754 || MapID == 755 || MapID == 859 ||     // Throne of Four Winds, Tol'vir, Zul'gurub
+            MapID == 861 || MapID == 938 || MapID == 939 ||     // Firelands Dailies, End Time, Well of Eternity
+            MapID == 940 || MapID == 962 || MapID == 967 ||     // Hour of Twilight, Gate of Setting Sun, Dragon Soul
+            MapID == 996 || MapID == 1007 || MapID == 1011;     // Endless Spring, New Scholomance, Niuzao Temple 
     }
 
     bool IsContinent() const
     {
-        return MapID == 0 || MapID == 1 || MapID == 530 || MapID == 571;
+        return MapID == 0 || MapID == 1 || MapID == 530 || MapID == 571 || MapID == 870;
     }
 
     bool IsTransport() const

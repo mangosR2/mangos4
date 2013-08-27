@@ -11779,6 +11779,7 @@ bool Unit::HandleStatModifier(UnitMods unitMod, UnitModifierType modifierType, f
         case UNIT_MOD_ENERGY:
         case UNIT_MOD_RUNE:
         case UNIT_MOD_RUNIC_POWER:         UpdateMaxPower(GetPowerTypeByAuraGroup(unitMod)); break;
+        case UNIT_MOD_CHI:                 UpdateMaxPower(GetPowerTypeByAuraGroup(unitMod)); break;
 
         case UNIT_MOD_RESISTANCE_HOLY:
         case UNIT_MOD_RESISTANCE_FIRE:
@@ -11908,6 +11909,7 @@ Powers Unit::GetPowerTypeByAuraGroup(UnitMods unitMod) const
         case UNIT_MOD_ENERGY:     return POWER_ENERGY;
         case UNIT_MOD_RUNE:       return POWER_RUNE;
         case UNIT_MOD_RUNIC_POWER:return POWER_RUNIC_POWER;
+        case UNIT_MOD_CHI:        return POWER_CHI;
         default:                  return POWER_MANA;
     }
 }
@@ -12232,6 +12234,7 @@ uint32 Unit::GetCreatePowers( Powers power ) const
         case POWER_SOUL_SHARDS: return 0;
         case POWER_ECLIPSE:     return 0;                   // TODO: fix me
         case POWER_HOLY_POWER:  return 0;
+        case POWER_CHI:         return GetTypeId() == TYPEID_PLAYER && ((Player const*)this)->getClass() == CLASS_MONK ? 1000 : 0;
     }
 
     return 0;

@@ -2404,7 +2404,7 @@ void Player::Regenerate(Powers power, uint32 diff)
     // addvalue computed on a 2sec basis. => update to diff time
     uint32 _addvalue = ceil(fabs(addvalue * float(diff) / (float)REGEN_TIME_FULL));
 
-    if (power != POWER_RAGE && power != POWER_RUNIC_POWER && power != POWER_HOLY_POWER)
+    if (power != POWER_RAGE && power != POWER_RUNIC_POWER && power != POWER_HOLY_POWER && power != POWER_CHI)
     {
         curValue += _addvalue;
         if (curValue > maxValue)

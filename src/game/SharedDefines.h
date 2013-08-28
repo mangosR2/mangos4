@@ -2129,7 +2129,7 @@ enum Emote
     EMOTE_STATE_STRANGULATE             = 473,
     EMOTE_STATE_READYSPELLOMNI          = 474,
     EMOTE_STATE_HOLD_JOUST              = 475,
-    EMOTE_ONESHOT_CRY_JAINA             = 476
+    EMOTE_ONESHOT_CRY_JAINA             = 476,
     EMOTE_ONESHOT_SPECIALUNARMED        = 477,
     EMOTE_STATE_DANCE_NOSHEATHE         = 478,
     EMOTE_ONESHOT_SNIFF                 = 479,

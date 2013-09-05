@@ -72,8 +72,7 @@ char const* CONF_mpq_list[] =
     "expansion4.MPQ",
 };
 
-uint32 const Builds[] = {15890, 16016, 16048, 16057, 16309, 16357, 16769, 0};
-#define LAST_DBC_IN_DATA_BUILD 16309    // after this build mpqs with dbc are back to locale folder
+uint32 const Builds[] = {15890, 16016, 16048, 16057, 16309, 16357, 16516, 16650, 16769, 16844, 16965, 0};
 
 char* const Locales[] = {"enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU"};
 TCHAR* const LocalesT[] =
@@ -133,16 +132,18 @@ bool LoadLocaleMPQFile(int locale)
     for (int i = 0; Builds[i] && Builds[i] <= CONF_TargetBuild; ++i)
     {
         memset(buff, 0, sizeof(buff));
-        if (Builds[i] > LAST_DBC_IN_DATA_BUILD)
+
+        prefix = "";
+        _stprintf(buff, _T("%s%s/wow-update-%s-%u.MPQ"), input_path, LocalesT[locale], LocalesT[locale], Builds[i]);
+
+        if (!SFileOpenPatchArchive(LocaleMpq, buff, prefix, 0))
         {
-            prefix = "";
-            _stprintf(buff, _T("%s%s/wow-update-%s-%u.MPQ"), input_path, LocalesT[locale], LocalesT[locale], Builds[i]);
+            if (GetLastError() != ERROR_FILE_NOT_FOUND)
+                _tprintf(_T("Cannot open patch archive %s\n"), buff);
         }
-        else
-        {
-            prefix = Locales[locale];
-            _stprintf(buff, _T("%swow-update-%u.MPQ"), input_path, Builds[i]);
-        }
+
+        prefix = Locales[locale];
+        _stprintf(buff, _T("%swow-update-%u.MPQ"), input_path, Builds[i]);
 
         if (!SFileOpenPatchArchive(LocaleMpq, buff, prefix, 0))
         {

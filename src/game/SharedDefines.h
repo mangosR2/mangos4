@@ -3194,12 +3194,12 @@ enum HolidayIds
 enum QuestSort
 {
     QUEST_SORT_EPIC                = 1,
-    QUEST_SORT_WAILING_CAVERNS_OLD = 21,
+    QUEST_SORT_HALLOWS_END         = 21,
     QUEST_SORT_SEASONAL            = 22,
-    QUEST_SORT_UNDERCITY_OLD       = 23,
+    QUEST_SORT_CATACLYSM           = 23,
     QUEST_SORT_HERBALISM           = 24,
     QUEST_SORT_BATTLEGROUNDS       = 25,
-    QUEST_SORT_ULDAMN_OLD          = 41,
+    QUEST_SORT_DAY_OF_THE_DEAD     = 41,
     QUEST_SORT_WARLOCK             = 61,
     QUEST_SORT_WARRIOR             = 81,
     QUEST_SORT_SHAMAN              = 82,
@@ -3212,7 +3212,7 @@ enum QuestSort
     QUEST_SORT_LEATHERWORKING      = 182,
     QUEST_SORT_ENGINEERING         = 201,
     QUEST_SORT_TREASURE_MAP        = 221,
-    QUEST_SORT_SUNKEN_TEMPLE_OLD   = 241,
+    QUEST_SORT_TOURNAMENT          = 241,
     QUEST_SORT_HUNTER              = 261,
     QUEST_SORT_PRIEST              = 262,
     QUEST_SORT_DRUID               = 263,
@@ -3245,6 +3245,9 @@ enum QuestSort
     QUEST_SORT_MONK                = 395,
     QUEST_SORT_LANDFALL            = 396,
     QUEST_SORT_PANDAREN_CAMPAIGN   = 397,
+    QUEST_SORT_RIDING              = 398,
+    QUEST_SORT_BRAWLERS_GUILD      = 399,
+    QUEST_SORT_PROVING_GROUNDS     = 400,
 };
 
 inline uint8 ClassByQuestSort(int32 QuestSort)

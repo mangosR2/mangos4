@@ -135,7 +135,9 @@ enum QuestTypes
     QUEST_TYPE_ESCORT              = 84,
     QUEST_TYPE_HEROIC              = 85,
     QUEST_TYPE_RAID_10             = 88,
-    QUEST_TYPE_RAID_25             = 89
+    QUEST_TYPE_RAID_25             = 89,
+    QUEST_TYPE_SCENARIO            = 98,   // MoP
+    QUEST_TYPE_ACCOUNT             = 102   // MoP
 };
 
 enum QuestFlags
